@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { GameState } from './types';
 import { useGame } from './context/GameContext';
@@ -20,7 +21,8 @@ const App: React.FC = () => {
     error, 
     time, 
     feedback, 
-    isProcessingAnswer 
+    isProcessingAnswer,
+    isDemoMode
   } = state;
 
   const renderContent = () => {
@@ -33,10 +35,13 @@ const App: React.FC = () => {
           <>
             <div className="w-full max-w-2xl mx-auto px-4">
               <div className="flex justify-between items-center mb-4">
-                  <p className="text-lg font-semibold text-teal-600 dark:text-[#00DFA2]">
-                    Question {currentQuestionIndex + 1}
-                    <span className="text-neutral-500 dark:text-neutral-300">/{questions.length}</span>
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p className="text-lg font-semibold text-teal-600 dark:text-[#00DFA2]">
+                      Question {currentQuestionIndex + 1}
+                      <span className="text-neutral-500 dark:text-neutral-300">/{questions.length}</span>
+                    </p>
+                    {isDemoMode && <span className="bg-yellow-400/20 text-yellow-500 dark:text-[#F6FA70] text-xs font-bold px-2 py-1 rounded-full">DEMO</span>}
+                  </div>
                   <Timer time={time} />
               </div>
               <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2.5 mb-6">

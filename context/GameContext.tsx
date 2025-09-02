@@ -1,7 +1,9 @@
 
+
 import React, { createContext, useReducer, useContext, useEffect, useRef, FC, PropsWithChildren } from 'react';
 import { GameState, Question, Vibe, Action, QuestionType } from '../types';
 import { fetchQuizQuestions, fetchFunnyFeedback } from '../services/geminiService';
+import { demoQuestions } from '../services/demoData';
 
 type Theme = 'light' | 'dark';
 
@@ -16,6 +18,7 @@ interface GameStateShape {
   isProcessingAnswer: boolean;
   time: number;
   theme: Theme;
+  isDemoMode: boolean;
 }
 
 const initialState: GameStateShape = {
@@ -29,6 +32,7 @@ const initialState: GameStateShape = {
   isProcessingAnswer: false,
   time: 0,
   theme: 'dark', // Default, will be updated by effect
+  isDemoMode: false,
 };
 
 // Define a new action type specifically for setting the initial theme.
@@ -39,7 +43,9 @@ const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispa
 const gameReducer = (state: GameStateShape, action: Action | SetThemeAction): GameStateShape => {
   switch (action.type) {
     case 'START_GAME':
-      return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload };
+      return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+    case 'START_DEMO':
+      return { ...initialState, theme: state.theme, gameState: GameState.Loading, isDemoMode: true };
     case 'GAME_LOAD_SUCCESS':
       return { ...state, gameState: GameState.Playing, questions: action.payload };
     case 'GAME_LOAD_FAILURE':
@@ -64,7 +70,7 @@ const gameReducer = (state: GameStateShape, action: Action | SetThemeAction): Ga
     case 'RESTART_GAME':
       return { ...initialState, theme: state.theme };
     case 'CONTINUE_TO_NEXT_VIBE':
-        return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload };
+        return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'TICK_TIMER':
         return { ...state, time: state.time + 1 };
     case 'TOGGLE_THEME': {
@@ -107,18 +113,27 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
   // Effect for fetching questions when game starts
   useEffect(() => {
-    if (state.gameState === GameState.Loading && state.vibe) {
-      fetchQuizQuestions(state.vibe)
-        .then(questions => {
-          dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions });
-        })
-        .catch(err => {
-          console.error(err);
-          const message = err instanceof Error ? err.message : 'An unknown cosmic anomaly occurred.';
-          dispatch({ type: 'GAME_LOAD_FAILURE', payload: message });
-        });
+    if (state.gameState === GameState.Loading) {
+      if (state.isDemoMode) {
+        // In demo mode, shuffle static questions and pick 5 for a quick, variable game.
+        setTimeout(() => {
+          const shuffled = [...demoQuestions].sort(() => 0.5 - Math.random());
+          dispatch({ type: 'GAME_LOAD_SUCCESS', payload: shuffled.slice(0, 5) });
+        }, 800);
+      } else if (state.vibe) {
+        // In a real game, fetch from the API
+        fetchQuizQuestions(state.vibe)
+          .then(questions => {
+            dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions });
+          })
+          .catch(err => {
+            console.error(err);
+            const message = err instanceof Error ? err.message : 'An unknown cosmic anomaly occurred.';
+            dispatch({ type: 'GAME_LOAD_FAILURE', payload: message });
+          });
+      }
     }
-  }, [state.gameState, state.vibe]);
+  }, [state.gameState, state.vibe, state.isDemoMode]);
   
   // Effect for managing the game timer
   useEffect(() => {
@@ -145,17 +160,25 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
         const currentQuestion = state.questions[state.currentQuestionIndex];
         const userAnswer = state.userAnswers[state.currentQuestionIndex];
-        const shouldGetFeedback = currentQuestion.type === QuestionType.ShortAnswer && Math.random() < 0.4;
-
+        
+        let feedbackToShow: string | null = null;
         let delay = 500;
-        if (shouldGetFeedback) {
-          try {
-            const funnyFeedback = await fetchFunnyFeedback(currentQuestion.question, userAnswer);
-            dispatch({ type: 'SHOW_FEEDBACK', payload: funnyFeedback });
-            delay = 4000;
-          } catch (error) {
-            console.error("Failed to get feedback, proceeding without it.", error);
-          }
+
+        if (state.isDemoMode && currentQuestion.demoFeedback) {
+            // In demo mode, use pre-written feedback
+            feedbackToShow = currentQuestion.demoFeedback;
+        } else if (!state.isDemoMode && currentQuestion.type === QuestionType.ShortAnswer && Math.random() < 0.4) {
+            // In a real game, try fetching live feedback
+            try {
+                feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer);
+            } catch (error) {
+                console.error("Failed to get feedback, proceeding without it.", error);
+            }
+        }
+
+        if (feedbackToShow) {
+            dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
+            delay = 4000; // Give user time to read feedback
         }
 
         setTimeout(() => {
@@ -171,7 +194,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       
       processAnswer();
     }
-  }, [state.userAnswers, state.currentQuestionIndex, state.questions, state.gameState]);
+  }, [state.userAnswers, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode]);
 
   return (
     <GameContext.Provider value={{ state, dispatch }}>

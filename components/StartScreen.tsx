@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Vibe } from '../types';
 import { useGame } from '../context/GameContext';
@@ -43,6 +44,10 @@ const StartScreen: React.FC = () => {
     dispatch({ type: 'START_GAME', payload: vibe });
   };
 
+  const handleDemo = () => {
+    dispatch({ type: 'START_DEMO' });
+  };
+
   return (
     <>
       <div className="w-full max-w-md text-center flex flex-col items-center justify-center animate-page-fade-in">
@@ -54,12 +59,20 @@ const StartScreen: React.FC = () => {
             <p className="text-lg text-neutral-600 dark:text-neutral-300 mb-8 px-4">
               Is your brain feeling a little fuzzy, or are you just enlightened? Let's find out.
             </p>
-            <button
-              onClick={() => setShowVibes(true)}
-              className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
-            >
-              How High
-            </button>
+            <div className="w-full flex flex-col gap-4">
+                <button
+                onClick={() => setShowVibes(true)}
+                className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                >
+                How High
+                </button>
+                <button 
+                  onClick={handleDemo}
+                  className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold text-lg py-4 px-8 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                >
+                  Try a Demo
+                </button>
+            </div>
           </div>
         ) : (
           <div className="w-full flex flex-col items-center">

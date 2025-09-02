@@ -17,9 +17,10 @@ const XIcon = () => (
 
 const ResultsScreen: React.FC = () => {
   const { state, dispatch } = useGame();
-  const { questions, userAnswers, time, vibe } = state;
+  const { questions, userAnswers, time, vibe, isDemoMode } = state;
 
   const { score, correctAnswers } = useMemo(() => {
+    if (questions.length === 0) return { score: 0, correctAnswers: 0 };
     const correct = userAnswers.filter(
       (answer, index) => answer.toLowerCase() === questions[index].answer.toLowerCase()
     ).length;
@@ -67,6 +68,12 @@ const ResultsScreen: React.FC = () => {
 
   return (
     <div className="w-full max-w-3xl p-4 md:p-8 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 animate-fade-in">
+      {isDemoMode && (
+          <div className="text-center mb-6 bg-yellow-400/20 text-yellow-600 dark:text-[#F6FA70] py-2 px-4 rounded-lg border border-yellow-500/30">
+              <p className="font-semibold">This is a score from Demo Mode.</p>
+              <p className="text-sm">For the full, dynamic experience, try a real game!</p>
+          </div>
+      )}
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
         <p className={`text-5xl font-bold ${color}`}>{title}</p>
@@ -104,7 +111,7 @@ const ResultsScreen: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {nextVibeInfo && <button onClick={() => handleContinue(nextVibeInfo.nextVibe)} className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-4 px-6 rounded-lg text-lg transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF0060]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black">{nextVibeInfo.buttonText}</button>}
+        {nextVibeInfo && !isDemoMode && <button onClick={() => handleContinue(nextVibeInfo.nextVibe)} className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-4 px-6 rounded-lg text-lg transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF0060]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black">{nextVibeInfo.buttonText}</button>}
         <div className="flex flex-col md:flex-row gap-4">
             <button onClick={handleRestart} className="w-full bg-[#0079FF] hover:bg-[#005cbf] text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black">Play Again</button>
             <button onClick={handleShare} className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black">Share Score</button>

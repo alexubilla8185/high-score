@@ -2,13 +2,30 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Question, QuestionType, Vibe } from "../types";
 
-const API_KEY = process.env.API_KEY;
+let ai: GoogleGenAI | null = null;
 
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
+/**
+ * Initializes and returns a singleton instance of the GoogleGenAI client.
+ * This is done lazily to prevent the app from crashing on load if the API key isn't set.
+ * Throws an error if the API key is not available in the environment.
+ */
+const getAiClient = (): GoogleGenAI => {
+  if (ai) {
+    return ai;
+  }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+  const API_KEY = process.env.API_KEY;
+
+  if (!API_KEY) {
+    // This error will now be thrown when the user starts the game,
+    // and will be caught by the UI, preventing a blank screen.
+    throw new Error("API_KEY environment variable not set. Please configure it in your deployment environment (e.g., Netlify).");
+  }
+
+  ai = new GoogleGenAI({ apiKey: API_KEY });
+  return ai;
+};
+
 
 const responseSchema = {
   type: Type.ARRAY,
@@ -84,6 +101,7 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
   `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -108,7 +126,7 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
         for (let attempt = 1; attempt <= 2; attempt++) {
           try {
             console.log(`Generating image for prompt: "${q.imagePrompt}" (Attempt ${attempt})`);
-            const imageResponse = await ai.models.generateImages({
+            const imageResponse = await getAiClient().models.generateImages({
               model: 'imagen-4.0-generate-001',
               prompt: q.imagePrompt,
               config: { numberOfImages: 1, outputMimeType: 'image/jpeg', aspectRatio: '1:1' },
@@ -162,23 +180,8 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
     return finalQuestions;
   } catch (error) {
     console.error("Error fetching or parsing questions:", error);
-    if (error instanceof SyntaxError) {
-        throw new Error("The cosmic source spoke in tongues (failed to parse API response). Please try again.");
-    }
     if (error instanceof Error) {
-        const errorMessage = error.message.toLowerCase();
-        if (errorMessage.includes("api key not valid")) {
-            throw new Error("Your API Key is not valid. Please check it and try again.");
-        }
-        if (errorMessage.includes("429") || errorMessage.includes("rate limit")) {
-            throw new Error("The cosmic source is overwhelmed! (Rate limit exceeded). Please wait a moment.");
-        }
-        if (errorMessage.includes("500") || errorMessage.includes("server error")) {
-            throw new Error("The cosmic source is having a temporary glitch (Server error). Please try again later.");
-        }
-        if (errorMessage.startsWith("All generated questions") || errorMessage.startsWith("API returned an empty")) {
-          throw error;
-        }
+        throw error; // Re-throw the original error to be handled by the context
     }
     throw new Error("A mysterious cosmic anomaly occurred while fetching questions. Please try again.");
   }
@@ -194,7 +197,7 @@ export const fetchFunnyFeedback = async (question: string, userAnswer: string): 
     `;
 
     try {
-        const response = await ai.models.generateContent({
+        const response = await getAiClient().models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
             config: { temperature: 0.9, },
@@ -204,6 +207,9 @@ export const fetchFunnyFeedback = async (question: string, userAnswer: string): 
         return feedbackText;
     } catch (error) {
         console.error("Error fetching funny feedback:", error);
+        if (error instanceof Error) {
+            throw error; // Re-throw to be handled by the caller
+        }
         throw new Error("Failed to get witty remark from Gemini API.");
     }
 };

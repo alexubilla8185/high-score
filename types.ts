@@ -1,4 +1,5 @@
 
+
 export enum QuestionType {
   MultipleChoice = "MULTIPLE_CHOICE",
   ShortAnswer = "SHORT_ANSWER",
@@ -13,6 +14,7 @@ export interface Question {
   explanation: string;
   imageUrl?: string;
   imagePrompt?: string; // For internal use in generation
+  demoFeedback?: string; // For simulating AI feedback in demo mode
 }
 
 export enum GameState {
@@ -32,6 +34,7 @@ export enum Vibe {
 // Action types for the reducer
 export type Action =
   | { type: 'START_GAME'; payload: Vibe }
+  | { type: 'START_DEMO' }
   | { type: 'GAME_LOAD_SUCCESS'; payload: Question[] }
   | { type: 'GAME_LOAD_FAILURE'; payload: string }
   | { type: 'ANSWER_QUESTION'; payload: string }
