@@ -49,8 +49,8 @@ const UpgradeModal: React.FC<UpgradeModalProps> = ({ onClose, onUpgrade }) => {
                     <li className="flex items-center"><CheckIcon className="text-teal-500 mr-2" /> AI-Generated Quizzes</li>
                     <li className="flex items-center"><CheckIcon className="text-teal-500 mr-2" /> Three 'Vibe' Levels</li>
                     <li className="flex items-center"><XIcon className="text-pink-500 mr-2" /> Dark & Light Themes</li>
-                    <li className="flex items-center"><XIcon className="text-pink-500 mr-2" /> Sound Effects</li>
-                    <li className="flex items-center"><XIcon className="text-pink-500 mr-2" /> Haptic Feedback</li>
+                    <li className="flex items-center"><XIcon className="text-pink-500 mr-2" /> Sound Effects & Haptics</li>
+                    <li className="flex items-center"><XIcon className="text-pink-500 mr-2" /> Sassy & Unfiltered AI</li>
                 </ul>
             </div>
             <div className="bg-gradient-to-br from-[#0079FF]/20 to-[#00DFA2]/20 p-4 rounded-lg border border-[#00DFA2]/50">
@@ -59,8 +59,8 @@ const UpgradeModal: React.FC<UpgradeModalProps> = ({ onClose, onUpgrade }) => {
                     <li className="flex items-center"><CheckIcon className="text-teal-500 mr-2" /> AI-Generated Quizzes</li>
                     <li className="flex items-center"><CheckIcon className="text-teal-500 mr-2" /> Three 'Vibe' Levels</li>
                     <li className="flex items-center font-semibold"><CheckIcon className="text-teal-500 mr-2" /> Dark & Light Themes</li>
-                    <li className="flex items-center font-semibold"><CheckIcon className="text-teal-500 mr-2" /> Sound Effects</li>
-                    <li className="flex items-center font-semibold"><CheckIcon className="text-teal-500 mr-2" /> Haptic Feedback</li>
+                    <li className="flex items-center font-semibold"><CheckIcon className="text-teal-500 mr-2" /> Sound Effects & Haptics</li>
+                    <li className="flex items-center font-semibold"><CheckIcon className="text-teal-500 mr-2" /> Sassy & Unfiltered AI</li>
                 </ul>
             </div>
         </div>

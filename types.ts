@@ -30,9 +30,15 @@ export enum Vibe {
   Voyager = "VOYAGER",
 }
 
+export enum AIPersonality {
+  Witty = "WITTY",
+  Sassy = "SASSY",
+  Unfiltered = "UNFILTERED",
+}
+
 // Action types for the reducer
 export type Action =
-  | { type: 'START_GAME'; payload: Vibe }
+  | { type: 'START_GAME'; payload: { vibe: Vibe, aiPersonality: AIPersonality } }
   | { type: 'START_DEMO' }
   | { type: 'START_DEMO_TOUR' }
   | { type: 'GAME_LOAD_SUCCESS'; payload: Question[] }
@@ -45,11 +51,12 @@ export type Action =
   | { type: 'NEXT_QUESTION' }
   | { type: 'FINISH_GAME' }
   | { type: 'RESTART_GAME' }
-  | { type: 'CONTINUE_TO_NEXT_VIBE'; payload: Vibe }
+  | { type: 'CONTINUE_TO_NEXT_VIBE'; payload: { vibe: Vibe, aiPersonality: AIPersonality } }
   | { type: 'TOGGLE_THEME' }
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
   | { type: 'TICK_TIMER' }
   | { type: 'TOGGLE_SOUND' }
   | { type: 'TOGGLE_HAPTIC' }
   | { type: 'UPGRADE_TO_PRO' }
-  | { type: 'LOGOUT' };
+  | { type: 'LOGOUT' }
+  | { type: 'SET_AI_PERSONALITY'; payload: AIPersonality };

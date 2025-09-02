@@ -4,9 +4,10 @@ interface LogoProps {
   onTripleClick?: () => void;
   onClick?: () => void;
   className?: string;
+  isAnimating?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
+const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimating }) => {
   const clickCount = useRef(0);
   const clickTimer = useRef<number | null>(null);
 
@@ -59,7 +60,7 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={className || "w-24 h-24 mb-4"}
+        className={`${className || "w-24 h-24 mb-4"} ${isAnimating ? 'animate-tongue' : ''}`}
         aria-label="High Score Logo"
       >
         <defs>
@@ -95,6 +96,9 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
         
         {/* Mouth (simple smile) */}
         <path d="M35 70 Q 50 85, 65 70" stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" />
+        
+        {/* Tongue - Hidden by default, animated with CSS */}
+        <path id="tongue" d="M45 72 C 48 80, 52 80, 55 72 Z" fill="#FF8A8A" stroke="#E57373" strokeWidth="1" style={{ transformOrigin: '50% 72px', transform: 'scaleY(0)' }} />
 
         {/* Joint - Rotated and positioned to come from the side of the smile */}
         <g transform="rotate(15 65 70)">

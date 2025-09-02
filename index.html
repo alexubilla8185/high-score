@@ -85,6 +85,18 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+      @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+      }
+      @keyframes tongue-flick {
+          0% { transform: scaleY(0); }
+          40% { transform: scaleY(1.2) translateY(4px); }
+          80% { transform: scaleY(0.9) translateY(1px); }
+          100% { transform: scaleY(0); }
+      }
       
       .animate-modal-fade-in {
         animation: modal-fade-in 0.3s ease-out forwards;
@@ -98,6 +110,12 @@
       }
       .animate-fade-in {
         animation: fade-in 0.5s ease-out forwards;
+      }
+       .animate-shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      }
+      .animate-tongue #tongue {
+        animation: tongue-flick 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
       }
 
       /* Animated CTA Button */

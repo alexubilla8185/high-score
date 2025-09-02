@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Vibe } from '../types';
+import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 import NerdSpecsModal from './NerdSpecsModal';
 import Logo from './Logo';
+import SignInModal from './SignInModal';
+import AIPersonalitySelector from './AIPersonalitySelector';
 
 const GoProIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
     </svg>
 );
 
 const TourIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-800 dark:text-white mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-800 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
@@ -48,77 +50,48 @@ const vibes = [
 
 const StartScreen: React.FC = () => {
     const { state, dispatch } = useGame();
-    const { isPro } = state;
+    const { isPro, aiPersonality } = state;
     
     const [showNerdSpecsModal, setShowNerdSpecsModal] = useState(false);
+    const [isSignInModalVisible, setSignInModalVisible] = useState(false);
+    const [splashTapped, setSplashTapped] = useState(false);
     
     const handleStartGame = (vibe: Vibe) => {
-        dispatch({ type: 'START_GAME', payload: vibe });
+        dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
     };
 
     const handleTakeTour = () => {
         dispatch({ type: 'START_DEMO_TOUR' });
     };
 
-    const handleGoPro = () => {
+    const handleGoProClick = () => {
+        setSignInModalVisible(true);
+    };
+
+    const handleSignInSuccess = () => {
         dispatch({ type: 'UPGRADE_TO_PRO' });
+        setSignInModalVisible(false);
     };
     
     const handleLogout = () => {
         dispatch({ type: 'LOGOUT' });
     };
 
+    const handleSplashTap = () => {
+        setSplashTapped(true);
+    };
+
     return (
         <>
-            <div className="w-full max-w-4xl text-center flex flex-col items-center justify-center animate-page-fade-in">
-                <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
-                <h1 className="sr-only">High Score</h1>
-                
-                {!isPro ? (
-                     <div className="w-full max-w-md flex flex-col items-center animate-card-fade-in-up">
-                        <p className="text-xl text-neutral-600 dark:text-neutral-300 mb-8 px-4">
-                           Is your brain feeling a little fuzzy, or are you just enlightened?
-                        </p>
-                        
-                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                            {/* Go Pro Card */}
-                            <div className="bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-[#00DFA2] hover:shadow-[#00DFA2]/20 dark:hover:shadow-[#00DFA2]/10">
-                                <GoProIcon />
-                                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#0079FF] to-[#00DFA2] text-transparent bg-clip-text mb-2">
-                                    Go Pro
-                                </h2>
-                                <p className="text-neutral-600 dark:text-neutral-300 text-sm mb-6 flex-grow">
-                                    Unlock all features, including themes, sounds, and haptic feedback.
-                                </p>
-                                <button
-                                    onClick={handleGoPro}
-                                    className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
-                                >
-                                    Sign In
-                                </button>
-                            </div>
-
-                            {/* Free Tour Card */}
-                             <div className="bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-neutral-800/50 p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600">
-                                <TourIcon />
-                                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-                                    Free Play
-                                </h2>
-                                <p className="text-neutral-600 dark:text-neutral-300 text-sm mb-6 flex-grow">
-                                    Take an interactive tour or play a demo round to see what it's all about.
-                                </p>
-                                <button
-                                    onClick={handleTakeTour}
-                                    className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
-                                >
-                                    Take the Tour
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
+            {/* The Vibe selection screen for Pro users */}
+            {isPro && (
+                <div className="w-full max-w-4xl text-center flex flex-col items-center justify-center animate-page-fade-in">
+                    <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
+                    <h1 className="sr-only">High Score</h1>
                     <div className="w-full max-w-md flex flex-col items-center animate-card-fade-in-up">
-                        <h2 className="text-2xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Vibe</h2>
+                        <AIPersonalitySelector />
+
+                        <h2 className="text-2xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-8">Choose Your Vibe</h2>
                         <div className="w-full space-y-4">
                         {vibes.map((v, index) => (
                             <button
@@ -142,10 +115,100 @@ const StartScreen: React.FC = () => {
                         &larr; Log Out
                         </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+            
+            {/* The Welcome/Splash screen for non-Pro users */}
+            {!isPro && (
+                <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
+                    {/* Background Content (Logo, Title). Blurs on interaction. */}
+                    <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${splashTapped ? 'blur-lg' : 'blur-sm'}`}>
+                         <Logo isAnimating={splashTapped} onTripleClick={() => setShowNerdSpecsModal(true)} />
+                        <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-gray-800 dark:text-white">
+                            Welcome to High Score
+                        </h1>
+                         <p className="text-lg text-neutral-600 dark:text-neutral-300 px-4">
+                            The AI-Powered Quiz Game
+                        </p>
+                    </div>
+
+                    {/* Initial Splash Overlay & Interaction Trigger */}
+                    {!splashTapped && (
+                        <div 
+                            className="absolute inset-0 z-20 cursor-pointer flex flex-col items-center justify-end"
+                            onClick={handleSplashTap}
+                        >
+                            <p className="mb-20 text-xl font-semibold text-white/80 animate-pulse">Tap anywhere to begin</p>
+                        </div>
+                    )}
+                    
+                    {/* Multi-Card Modal that appears after tap */}
+                    {splashTapped && (
+                        <div 
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="welcome-title"
+                            className="relative z-30 w-full max-w-2xl bg-white/60 dark:bg-black/20 backdrop-blur-2xl border border-gray-200/50 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-6 sm:p-8 m-4 animate-card-fade-in-up"
+                        >
+                            <h2 id="welcome-title" className="text-2xl font-bold text-center mb-1 text-gray-900 dark:text-white">
+                                How do you want to play?
+                            </h2>
+                            <p className="text-center text-neutral-600 dark:text-neutral-300 mb-8">
+                               Choose your path to cosmic enlightenment.
+                            </p>
+                            
+                            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Go Pro Card */}
+                                <div className="bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-[#00DFA2] hover:shadow-[#00DFA2]/20 dark:hover:shadow-[#00DFA2]/10">
+                                    <div className="flex items-center justify-center mb-3">
+                                        <GoProIcon />
+                                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[#0079FF] to-[#00DFA2] text-transparent bg-clip-text">
+                                            Go Pro
+                                        </h2>
+                                    </div>
+                                    <p className="text-neutral-600 dark:text-neutral-300 text-sm mb-6 flex-grow">
+                                        Unlock all features, including themes, sounds, and haptic feedback.
+                                    </p>
+                                    <button
+                                        onClick={handleGoProClick}
+                                        className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                                    >
+                                        Sign In
+                                    </button>
+                                </div>
+
+                                {/* Free Tour Card */}
+                                <div className="bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-neutral-800/50 p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600">
+                                    <div className="flex items-center justify-center mb-3">
+                                        <TourIcon />
+                                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                                            Free Play
+                                        </h2>
+                                    </div>
+                                    <p className="text-neutral-600 dark:text-neutral-300 text-sm mb-6 flex-grow">
+                                        Take an interactive tour to see what it's all about.
+                                    </p>
+                                    <button
+                                        onClick={handleTakeTour}
+                                        className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                                    >
+                                        Take the Tour
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
             
             {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
+
+            {isSignInModalVisible && (
+                <SignInModal 
+                    onClose={() => setSignInModalVisible(false)}
+                    onSignInSuccess={handleSignInSuccess}
+                />
+            )}
         </>
     );
 };

@@ -47,7 +47,8 @@ const ResultsScreen: React.FC = () => {
   else if (vibe === Vibe.Toasted) nextVibeInfo = { text: "You're getting warmer...", buttonText: "Go Deeper: Try 'Voyager'", nextVibe: Vibe.Voyager };
   
   const handleRestart = () => dispatch({ type: 'RESTART_GAME' });
-  const handleContinue = (nextVibe: Vibe) => dispatch({ type: 'CONTINUE_TO_NEXT_VIBE', payload: nextVibe });
+  // Fix: The payload for 'CONTINUE_TO_NEXT_VIBE' must be an object containing both the new vibe and the current AI personality.
+  const handleContinue = (nextVibe: Vibe) => dispatch({ type: 'CONTINUE_TO_NEXT_VIBE', payload: { vibe: nextVibe, aiPersonality: state.aiPersonality } });
   
   const handleShare = async () => {
     const shareData = {

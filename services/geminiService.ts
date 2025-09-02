@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Question, QuestionType, Vibe } from "../types";
+import { Question, QuestionType, Vibe, AIPersonality } from "../types";
 
 let ai: GoogleGenAI | null = null;
 
@@ -65,8 +65,22 @@ const responseSchema = {
   },
 };
 
-export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
-  console.log(`Fetching quiz questions for vibe: ${vibe}`);
+const getPersonalityInstruction = (personality: AIPersonality): string => {
+    switch (personality) {
+        case AIPersonality.Sassy:
+            return "You are a deeply sarcastic and unimpressed AI quizmaster. Your wit is dry and sharp. The humor should be cynical and playfully condescending, but clever. Avoid being genuinely mean.";
+        case AIPersonality.Unfiltered:
+            return "You are an edgy, unfiltered AI comedian hosting a roast battle disguised as a quiz show. Be brutally honest and use dark humor. The tone should be sharp and biting. Strictly avoid any explicit profanity, hate speech, or truly harmful content to stay within safety guidelines.";
+        case AIPersonality.Witty:
+        default:
+            return "You are a witty, creative, and slightly unhinged AI quizmaster with a great sense of humor.";
+    }
+};
+
+export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promise<Question[]> => {
+  console.log(`Fetching quiz questions for vibe: ${vibe} with personality: ${aiPersonality}`);
+
+  const personalityInstruction = getPersonalityInstruction(aiPersonality);
 
   let vibeInstruction = "";
   switch (vibe) {
@@ -81,8 +95,9 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
       break;
   }
 
-  const prompt = `
-    Generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. 
+  const systemInstruction = `
+    ${personalityInstruction}
+    Your goal is to generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. 
     Ensure the questions are highly creative and varied to avoid repetition on subsequent requests.
     
     The questions should be a mix of:
@@ -90,15 +105,15 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
     2. Bizarre multiple-choice questions (as MULTIPLE_CHOICE).
     3. Questions about a surreal image (as IMAGE_QUESTION). For variety, make 1 to 3 of the 10 questions an IMAGE_QUESTION.
 
-    ${vibeInstruction}
-
     For SHORT_ANSWER questions, the answer should be a single word or a very short phrase.
     For MULTIPLE_CHOICE questions, provide exactly 4 options, where one is correct and the others are funny, plausible-but-wrong decoys.
     For IMAGE_QUESTION questions, provide an 'imagePrompt' for an image generation AI. The prompt should be descriptive, surreal, and funny (e.g., "A photorealistic rubber chicken wearing a tiny cowboy hat, riding a snail through a neon-lit puddle."). The 'question' should be about the image (e.g., "What is the chicken riding?"), and the 'answer' should be the correct response (e.g., "A snail").
     
-    Every question must have a witty explanation.
+    Every question must have an explanation that matches your personality.
     Return the questions in the specified JSON schema format.
   `;
+  
+  const prompt = `Generate the 10 quiz questions now based on this user's chosen vibe: ${vibe}.`;
 
   try {
     const ai = getAiClient();
@@ -106,6 +121,7 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
+        systemInstruction,
         responseMimeType: "application/json",
         responseSchema: responseSchema,
         temperature: 1.0,
@@ -188,20 +204,27 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
   }
 };
 
-export const fetchFunnyFeedback = async (question: string, userAnswer: string): Promise<string> => {
-    console.log(`Fetching funny feedback for question: "${question}" with answer: "${userAnswer}"`);
-    const prompt = `
-        You are a witty, slightly unhinged quizmaster.
-        A user was asked the following question: "${question}"
-        They answered: "${userAnswer}"
-        Your task is to provide a short, funny, and clever reaction to their answer. It could be a compliment if it's clever, a funny put-down if it's absurd, or a moment of shared confusion. Keep it to a single sentence. Do NOT return your response in quotes. Be direct.
+export const fetchFunnyFeedback = async (question: string, userAnswer: string, aiPersonality: AIPersonality): Promise<string> => {
+    console.log(`Fetching funny feedback for question: "${question}" with answer: "${userAnswer}" and personality: ${aiPersonality}`);
+    
+    const personalityInstruction = getPersonalityInstruction(aiPersonality);
+
+    const systemInstruction = `
+        ${personalityInstruction}
+        Your task is to provide a short, funny, and clever reaction to the user's answer. 
+        It could be a compliment if it's clever, a funny put-down if it's absurd, or a moment of shared confusion. 
+        Keep it to a single, impactful sentence. Do NOT return your response in quotes. Be direct.
     `;
+    const prompt = `The user was asked: "${question}"\nThey answered: "${userAnswer}"\nYour reaction is:`;
 
     try {
         const response = await getAiClient().models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
-            config: { temperature: 0.9, },
+            config: {
+                systemInstruction,
+                temperature: 0.9,
+            },
         });
         const feedbackText = response.text.trim();
         if (!feedbackText) throw new Error("API returned empty feedback.");

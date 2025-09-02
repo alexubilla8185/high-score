@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useContext, useEffect, useRef, FC, PropsWithChildren } from 'react';
-import { GameState, Question, Vibe, Action, QuestionType } from '../types';
+import { GameState, Question, Vibe, Action, QuestionType, AIPersonality } from '../types';
 import { fetchQuizQuestions, fetchFunnyFeedback } from '../services/geminiService';
 import { demoQuestions } from '../services/demoData';
 import { playSound } from '../services/audioPlayer';
@@ -25,9 +25,10 @@ interface GameStateShape {
   isMuted: boolean;
   isHapticEnabled: boolean;
   isPro: boolean;
+  aiPersonality: AIPersonality;
 }
 
-const getInitialState = (): Omit<GameStateShape, 'theme' | 'isMuted' | 'isHapticEnabled' | 'isPro'> => ({
+const getInitialState = (): Omit<GameStateShape, 'theme' | 'isMuted' | 'isHapticEnabled' | 'isPro' | 'aiPersonality'> => ({
   gameState: GameState.Idle,
   questions: [],
   currentQuestionIndex: 0,
@@ -46,6 +47,7 @@ const initialState: GameStateShape = {
     isMuted: true,
     isHapticEnabled: true,
     isPro: false,
+    aiPersonality: AIPersonality.Witty,
 };
 
 // Define private action types for setting initial state values.
@@ -59,7 +61,7 @@ const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispa
 const gameReducer = (state: GameStateShape, action: Action | PrivateAction): GameStateShape => {
   switch (action.type) {
     case 'START_GAME':
-      return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+      return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false };
     case 'START_DEMO':
       return { ...state, ...getInitialState(), gameState: GameState.Loading, isDemoMode: true };
     case 'START_DEMO_TOUR':
@@ -88,11 +90,11 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'FINISH_GAME':
       return { ...state, gameState: GameState.Finished };
     case 'RESTART_GAME':
-      return { ...state, ...getInitialState(), isPro: state.isPro }; // Keep pro status on restart
+      return { ...state, ...getInitialState(), isPro: state.isPro, aiPersonality: state.aiPersonality }; // Keep pro status and personality on restart
     case 'LOGOUT':
-      return { ...state, ...getInitialState(), isPro: false };
+      return { ...state, ...getInitialState(), isPro: false, aiPersonality: AIPersonality.Witty };
     case 'CONTINUE_TO_NEXT_VIBE':
-        return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+        return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false };
     case 'TICK_TIMER':
         return { ...state, time: Math.max(0, state.time - 1) };
     case 'TOGGLE_THEME': {
@@ -118,6 +120,8 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'UPGRADE_TO_PRO': {
         return { ...state, isPro: true };
     }
+    case 'SET_AI_PERSONALITY':
+        return { ...state, aiPersonality: action.payload };
     case 'SET_THEME':
       return { ...state, theme: action.payload };
     case 'SET_SOUND':
@@ -165,7 +169,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           dispatch({ type: 'GAME_LOAD_SUCCESS', payload: shuffled.slice(0, 5) });
         }, 800);
       } else if (state.vibe) {
-        fetchQuizQuestions(state.vibe)
+        fetchQuizQuestions(state.vibe, state.aiPersonality)
           .then(questions => dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions }))
           .catch(err => {
             console.error(err);
@@ -174,7 +178,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           });
       }
     }
-  }, [state.gameState, state.vibe, state.isDemoMode]);
+  }, [state.gameState, state.vibe, state.isDemoMode, state.aiPersonality]);
   
   // Effect for managing the game timer (countdown)
   useEffect(() => {
@@ -231,7 +235,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
                 feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
             } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.4) {
                 try {
-                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer);
+                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality);
                 } catch (error) {
                     console.error("Failed to get feedback, proceeding without it.", error);
                 }
@@ -262,7 +266,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       
       processAnswer();
     }
-  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, dispatch]);
+  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, state.aiPersonality, dispatch]);
 
 
   return (

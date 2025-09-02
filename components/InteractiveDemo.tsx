@@ -15,7 +15,7 @@ const AIBanterIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-
 const steps = [
     {
         title: "Welcome to High Score!",
-        icon: <Logo className="w-20 h-20" />,
+        icon: <Logo className="w-16 h-16" />,
         content: "Ready to test your vibe? This quick tour will show you how our AI-powered quiz works and what you get with Pro.",
     },
     {
@@ -42,7 +42,7 @@ const steps = [
     },
     {
         title: "You're Ready to Go!",
-        icon: <Logo className="w-20 h-20" />,
+        icon: <Logo className="w-16 h-16" />,
         content: "That's the tour! Get the full experience by signing up for Pro, or try a 5-question classic demo game now.",
         interactive: 'final',
     },
@@ -50,7 +50,7 @@ const steps = [
 
 
 const InteractiveDemo: React.FC = () => {
-    const { state, dispatch } = useGame();
+    const { dispatch } = useGame();
     const [step, setStep] = useState(0);
 
     const handleNext = () => setStep(s => Math.min(s + 1, steps.length - 1));
@@ -65,19 +65,19 @@ const InteractiveDemo: React.FC = () => {
         switch(currentStep.interactive) {
             case 'feedback':
                 return (
-                    <div className="flex gap-4 mt-4">
-                        <button onClick={() => { playSound('correct'); triggerHaptic('correct'); }} className="flex-1 p-2 bg-teal-500/20 text-teal-500 dark:text-[#00DFA2] rounded-lg border border-teal-500/30">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                        <button onClick={() => { playSound('correct'); triggerHaptic('correct'); }} className="flex-1 p-3 bg-teal-500/20 text-teal-600 dark:text-[#00DFA2] rounded-lg border border-teal-500/30 hover:bg-teal-500/30 transition-colors">
                             Simulate Correct
                         </button>
-                         <button onClick={() => { playSound('incorrect'); triggerHaptic('incorrect'); }} className="flex-1 p-2 bg-pink-500/20 text-pink-500 dark:text-[#FF0060] rounded-lg border border-pink-500/30">
+                         <button onClick={() => { playSound('incorrect'); triggerHaptic('incorrect'); }} className="flex-1 p-3 bg-pink-500/20 text-pink-600 dark:text-[#FF0060] rounded-lg border border-pink-500/30 hover:bg-pink-500/30 transition-colors">
                             Simulate Incorrect
                         </button>
                     </div>
                 );
             case 'theme':
                 return (
-                    <div className="flex justify-center items-center gap-4 mt-4">
-                        <p className="text-sm">Toggle me:</p>
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                        <p className="text-sm font-medium">Toggle the theme:</p>
                         <ThemeToggle onToggle={() => dispatch({ type: 'TOGGLE_THEME' })} />
                     </div>
                 );
@@ -98,24 +98,27 @@ const InteractiveDemo: React.FC = () => {
     }
 
     return (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in">
-            <div className="relative w-full max-w-sm bg-white/80 dark:bg-black/30 backdrop-blur-2xl border border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-6 text-center animate-card-fade-in-up">
-                 <button onClick={handleClose} className="absolute top-2 right-2 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]" aria-label="Close Tour">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in">
+            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-t-2 sm:border-2 border-gray-200 dark:border-neutral-800/50 rounded-t-2xl sm:rounded-2xl shadow-2xl p-4 pt-6 sm:p-8 flex flex-col h-auto max-h-[85vh] sm:max-h-[90vh] animate-card-fade-in-up">
+                <button onClick={handleClose} className="absolute top-3 right-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]" aria-label="Close Tour">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
                 
-                <div className="flex justify-center text-teal-600 dark:text-[#00DFA2] mb-4 h-20 items-center">
-                    {currentStep.icon}
+                <div className="flex-grow overflow-y-auto text-center px-2 pb-4">
+                    <div className="flex justify-center text-teal-600 dark:text-[#00DFA2] mb-4 h-16 items-center">
+                        {currentStep.icon}
+                    </div>
+
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">{currentStep.title}</h2>
+                    <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                        {currentStep.content}
+                    </p>
+                    {renderInteractiveElement()}
                 </div>
-
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{currentStep.title}</h2>
-                <p className="text-neutral-600 dark:text-neutral-300 min-h-[7rem]">{currentStep.content}</p>
-
-                {renderInteractiveElement()}
                 
                 {currentStep.interactive !== 'final' && (
-                    <div className="flex justify-between items-center mt-8">
-                        <button onClick={handleBack} disabled={step === 0} className="px-4 py-2 text-neutral-500 rounded-md disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors">Back</button>
+                    <div className="flex-shrink-0 flex justify-between items-center mt-auto pt-4 border-t border-gray-200 dark:border-neutral-800/50">
+                        <button onClick={handleBack} disabled={step === 0} className="px-4 py-2 text-neutral-500 rounded-md disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]">Back</button>
                         
                         <div className="flex items-center gap-2">
                             {steps.map((_, i) => (
@@ -123,7 +126,9 @@ const InteractiveDemo: React.FC = () => {
                             ))}
                         </div>
                         
-                        <button onClick={handleNext} className="px-4 py-2 bg-[#0079FF] text-white rounded-md hover:bg-blue-700 transition-colors">{step === steps.length - 1 ? 'Finish' : 'Next'}</button>
+                        <button onClick={handleNext} className="px-4 py-2 bg-[#0079FF] text-white font-bold rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2]">
+                            {step === steps.length - 2 ? 'Finish' : 'Next'}
+                        </button>
                     </div>
                 )}
             </div>
