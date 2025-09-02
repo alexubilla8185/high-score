@@ -24,9 +24,10 @@ interface GameStateShape {
   isDemoMode: boolean;
   isMuted: boolean;
   isHapticEnabled: boolean;
+  isPro: boolean;
 }
 
-const getInitialState = (): GameStateShape => ({
+const getInitialState = (): Omit<GameStateShape, 'theme' | 'isMuted' | 'isHapticEnabled' | 'isPro'> => ({
   gameState: GameState.Idle,
   questions: [],
   currentQuestionIndex: 0,
@@ -36,11 +37,16 @@ const getInitialState = (): GameStateShape => ({
   feedback: null,
   isProcessingAnswer: false,
   time: QUESTION_TIME_LIMIT,
-  theme: 'dark',
   isDemoMode: false,
-  isMuted: true,
-  isHapticEnabled: true,
 });
+
+const initialState: GameStateShape = {
+    ...getInitialState(),
+    theme: 'dark',
+    isMuted: true,
+    isHapticEnabled: true,
+    isPro: false,
+};
 
 // Define private action types for setting initial state values.
 type PrivateAction = 
@@ -53,9 +59,9 @@ const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispa
 const gameReducer = (state: GameStateShape, action: Action | PrivateAction): GameStateShape => {
   switch (action.type) {
     case 'START_GAME':
-      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+      return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'START_DEMO':
-      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, isDemoMode: true };
+      return { ...state, ...getInitialState(), gameState: GameState.Loading, isDemoMode: true };
     case 'GAME_LOAD_SUCCESS':
       return { ...state, gameState: GameState.Playing, questions: action.payload, time: QUESTION_TIME_LIMIT };
     case 'GAME_LOAD_FAILURE':
@@ -80,9 +86,9 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'FINISH_GAME':
       return { ...state, gameState: GameState.Finished };
     case 'RESTART_GAME':
-      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled };
+      return { ...state, ...getInitialState() };
     case 'CONTINUE_TO_NEXT_VIBE':
-        return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+        return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'TICK_TIMER':
         return { ...state, time: Math.max(0, state.time - 1) };
     case 'TOGGLE_THEME': {
@@ -105,6 +111,9 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
         localStorage.setItem('hapticEnabled', JSON.stringify(newHapticState));
         return { ...state, isHapticEnabled: newHapticState };
     }
+    case 'UPGRADE_TO_PRO': {
+        return { ...state, isPro: true };
+    }
     case 'SET_THEME':
       return { ...state, theme: action.payload };
     case 'SET_SOUND':
@@ -117,7 +126,7 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
 };
 
 export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [state, dispatch] = useReducer(gameReducer, getInitialState());
+  const [state, dispatch] = useReducer(gameReducer, initialState);
   const timerRef = useRef<number | null>(null);
   
   // Effect for setting initial theme, sound, and haptic state from localStorage

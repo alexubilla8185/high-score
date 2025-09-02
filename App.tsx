@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
 
@@ -11,9 +11,10 @@ import FeedbackOverlay from './components/FeedbackOverlay';
 import ThemeToggle from './components/ThemeToggle';
 import SoundToggle from './components/SoundToggle';
 import HapticToggle from './components/HapticToggle';
+import UpgradeModal from './components/UpgradeModal';
 
 const App: React.FC = () => {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   const { 
     gameState, 
     questions, 
@@ -22,8 +23,19 @@ const App: React.FC = () => {
     time, 
     feedback, 
     isProcessingAnswer,
-    isDemoMode
+    isDemoMode,
+    isPro
   } = state;
+
+  const [isUpgradeModalVisible, setUpgradeModalVisible] = useState(false);
+
+  const handlePremiumFeatureToggle = (actionType: 'TOGGLE_HAPTIC' | 'TOGGLE_SOUND' | 'TOGGLE_THEME') => {
+    if (isPro) {
+      dispatch({ type: actionType });
+    } else {
+      setUpgradeModalVisible(true);
+    }
+  };
 
   const renderContent = () => {
     switch (gameState) {
@@ -82,9 +94,9 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-[#0079FF] selection:text-white">
         <div className="fixed top-4 right-4 z-10 flex items-center gap-3">
-          <HapticToggle />
-          <SoundToggle />
-          <ThemeToggle />
+          <HapticToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_HAPTIC')} />
+          <SoundToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_SOUND')} />
+          <ThemeToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_THEME')} />
         </div>
         <main className="w-full max-w-3xl flex flex-col items-center justify-center flex-grow">
           {renderContent()}
@@ -94,6 +106,15 @@ const App: React.FC = () => {
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-200/50 dark:bg-black/50 backdrop-blur-sm">
             <Spinner />
           </div>
+        )}
+        {isUpgradeModalVisible && (
+          <UpgradeModal 
+            onClose={() => setUpgradeModalVisible(false)} 
+            onUpgrade={() => {
+              dispatch({ type: 'UPGRADE_TO_PRO' });
+              setUpgradeModalVisible(false);
+            }} 
+          />
         )}
     </div>
   );
