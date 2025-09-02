@@ -164,9 +164,11 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         let feedbackToShow: string | null = null;
         let delay = 500;
 
-        if (state.isDemoMode && currentQuestion.demoFeedback) {
-            // In demo mode, use pre-written feedback
-            feedbackToShow = currentQuestion.demoFeedback;
+        if (state.isDemoMode && currentQuestion.demoFeedback && currentQuestion.demoFeedback.length > 0) {
+            // In demo mode, use pre-written feedback by randomly selecting one
+            const feedbackOptions = currentQuestion.demoFeedback;
+            const randomIndex = Math.floor(Math.random() * feedbackOptions.length);
+            feedbackToShow = feedbackOptions[randomIndex];
         } else if (!state.isDemoMode && currentQuestion.type === QuestionType.ShortAnswer && Math.random() < 0.4) {
             // In a real game, try fetching live feedback
             try {

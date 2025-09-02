@@ -14,7 +14,7 @@ export interface Question {
   explanation: string;
   imageUrl?: string;
   imagePrompt?: string; // For internal use in generation
-  demoFeedback?: string; // For simulating AI feedback in demo mode
+  demoFeedback?: string[]; // For simulating AI feedback in demo mode
 }
 
 export enum GameState {
