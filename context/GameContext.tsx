@@ -62,6 +62,8 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
       return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'START_DEMO':
       return { ...state, ...getInitialState(), gameState: GameState.Loading, isDemoMode: true };
+    case 'START_DEMO_TOUR':
+      return { ...state, gameState: GameState.DemoTour };
     case 'GAME_LOAD_SUCCESS':
       return { ...state, gameState: GameState.Playing, questions: action.payload, time: QUESTION_TIME_LIMIT };
     case 'GAME_LOAD_FAILURE':
@@ -86,7 +88,9 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'FINISH_GAME':
       return { ...state, gameState: GameState.Finished };
     case 'RESTART_GAME':
-      return { ...state, ...getInitialState() };
+      return { ...state, ...getInitialState(), isPro: state.isPro }; // Keep pro status on restart
+    case 'LOGOUT':
+      return { ...state, ...getInitialState(), isPro: false };
     case 'CONTINUE_TO_NEXT_VIBE':
         return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'TICK_TIMER':

@@ -12,6 +12,9 @@ import ThemeToggle from './components/ThemeToggle';
 import SoundToggle from './components/SoundToggle';
 import HapticToggle from './components/HapticToggle';
 import UpgradeModal from './components/UpgradeModal';
+import Logo from './components/Logo';
+import InteractiveDemo from './components/InteractiveDemo';
+import ShareButton from './components/ShareButton';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -35,6 +38,10 @@ const App: React.FC = () => {
     } else {
       setUpgradeModalVisible(true);
     }
+  };
+
+  const handleLogoClick = () => {
+    dispatch({ type: 'RESTART_GAME' });
   };
 
   const renderContent = () => {
@@ -73,6 +80,9 @@ const App: React.FC = () => {
       
       case GameState.Finished:
         return <ResultsScreen />;
+
+      case GameState.DemoTour:
+        return <InteractiveDemo />;
       
       case GameState.Error:
         return <div className="text-center">
@@ -93,7 +103,13 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-[#0079FF] selection:text-white">
-        <div className="fixed top-4 right-4 z-10 flex items-center gap-3">
+        {( (isDemoMode && (gameState === GameState.Playing || gameState === GameState.Finished)) || gameState === GameState.DemoTour) && (
+          <div className="fixed top-4 left-4 z-50">
+            <Logo onClick={handleLogoClick} className="w-16 h-16" />
+          </div>
+        )}
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+          <ShareButton />
           <HapticToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_HAPTIC')} />
           <SoundToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_SOUND')} />
           <ThemeToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_THEME')} />

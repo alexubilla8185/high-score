@@ -21,6 +21,7 @@ export enum GameState {
   Playing = "playing",
   Finished = "finished",
   Error = "error",
+  DemoTour = "demo_tour",
 }
 
 export enum Vibe {
@@ -33,6 +34,7 @@ export enum Vibe {
 export type Action =
   | { type: 'START_GAME'; payload: Vibe }
   | { type: 'START_DEMO' }
+  | { type: 'START_DEMO_TOUR' }
   | { type: 'GAME_LOAD_SUCCESS'; payload: Question[] }
   | { type: 'GAME_LOAD_FAILURE'; payload: string }
   | { type: 'ANSWER_QUESTION'; payload: string }
@@ -49,4 +51,5 @@ export type Action =
   | { type: 'TICK_TIMER' }
   | { type: 'TOGGLE_SOUND' }
   | { type: 'TOGGLE_HAPTIC' }
-  | { type: 'UPGRADE_TO_PRO' };
+  | { type: 'UPGRADE_TO_PRO' }
+  | { type: 'LOGOUT' };

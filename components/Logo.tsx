@@ -1,41 +1,65 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface LogoProps {
   onTripleClick?: () => void;
+  onClick?: () => void;
+  className?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ onTripleClick }) => {
-  const clickTimestamps = useRef<number[]>([]);
+const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
+  const clickCount = useRef(0);
+  const clickTimer = useRef<number | null>(null);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimer.current) {
+        clearTimeout(clickTimer.current);
+      }
+    };
+  }, []);
 
   const handleClick = () => {
-    if (!onTripleClick) return;
+    clickCount.current += 1;
 
-    const now = Date.now();
-    // Remove clicks older than 700ms
-    const recentClicks = clickTimestamps.current.filter(
-      timestamp => now - timestamp < 700
-    );
-    
-    recentClicks.push(now);
+    // If a multi-click handler exists, use a timeout to differentiate clicks
+    if (onTripleClick) {
+      if (clickTimer.current) {
+        clearTimeout(clickTimer.current);
+      }
 
-    if (recentClicks.length >= 3) {
-      onTripleClick();
-      clickTimestamps.current = []; // Reset after triggering
-    } else {
-      clickTimestamps.current = recentClicks;
+      // If it's a triple-click, act immediately and cancel any pending single-click.
+      if (clickCount.current === 3) {
+        onTripleClick();
+        clickCount.current = 0; // Reset
+        return;
+      }
+      
+      // If it's a single click, set a timer. If another click comes, it will be cancelled.
+      clickTimer.current = window.setTimeout(() => {
+        if (clickCount.current === 1 && onClick) {
+            onClick();
+        }
+        clickCount.current = 0; // Reset count after the delay
+      }, 250); // Standard multi-click time
+
+    } else if (onClick) {
+      // If there's no triple-click handler, fire single clicks immediately for responsiveness
+      onClick();
     }
   };
   
-  // Adding a div wrapper for the onClick event for better semantics and to provide a hint for interaction
   return (
-    <div onClick={handleClick} className="cursor-pointer" title="What secrets do you hold?">
+    <div
+      onClick={handleClick}
+      className="cursor-pointer"
+      title={onClick ? 'Back to Home' : 'What secrets do you hold?'}
+    >
       <svg
-        width="100"
-        height="100"
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="mb-4"
+        className={className || "w-24 h-24 mb-4"}
         aria-label="High Score Logo"
       >
         <defs>
