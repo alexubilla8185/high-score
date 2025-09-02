@@ -21,15 +21,13 @@ const ThemeToggle: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-10">
-      <button
-        onClick={handleToggle}
-        aria-label={`Switch to ${state.theme === 'light' ? 'dark' : 'light'} mode`}
-        className="w-14 h-14 bg-gray-200 dark:bg-neutral-800/80 rounded-full flex items-center justify-center text-gray-800 dark:text-white shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
-      >
-        {state.theme === 'light' ? <MoonIcon /> : <SunIcon />}
-      </button>
-    </div>
+    <button
+      onClick={handleToggle}
+      aria-label={`Switch to ${state.theme === 'light' ? 'dark' : 'light'} mode`}
+      className="w-12 h-12 bg-gray-200 dark:bg-neutral-800/80 rounded-full flex items-center justify-center text-gray-800 dark:text-white shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
+    >
+      {state.theme === 'light' ? <MoonIcon /> : <SunIcon />}
+    </button>
   );
 };
 

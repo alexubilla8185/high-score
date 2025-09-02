@@ -1,5 +1,6 @@
 
 
+
 export enum QuestionType {
   MultipleChoice = "MULTIPLE_CHOICE",
   ShortAnswer = "SHORT_ANSWER",
@@ -48,4 +49,6 @@ export type Action =
   | { type: 'CONTINUE_TO_NEXT_VIBE'; payload: Vibe }
   | { type: 'TOGGLE_THEME' }
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
-  | { type: 'TICK_TIMER' };
+  | { type: 'TICK_TIMER' }
+  | { type: 'TOGGLE_SOUND' }
+  | { type: 'TOGGLE_HAPTIC' };

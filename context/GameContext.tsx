@@ -1,11 +1,14 @@
-
-
 import React, { createContext, useReducer, useContext, useEffect, useRef, FC, PropsWithChildren } from 'react';
 import { GameState, Question, Vibe, Action, QuestionType } from '../types';
 import { fetchQuizQuestions, fetchFunnyFeedback } from '../services/geminiService';
 import { demoQuestions } from '../services/demoData';
+import { playSound } from '../services/audioPlayer';
+import { triggerHaptic, HapticPattern } from '../services/haptic';
 
 type Theme = 'light' | 'dark';
+
+export const QUESTION_TIME_LIMIT = 45; // in seconds
+const ANSWER_TIMED_OUT = '__TIMES_UP__';
 
 interface GameStateShape {
   gameState: GameState;
@@ -19,9 +22,11 @@ interface GameStateShape {
   time: number;
   theme: Theme;
   isDemoMode: boolean;
+  isMuted: boolean;
+  isHapticEnabled: boolean;
 }
 
-const initialState: GameStateShape = {
+const getInitialState = (): GameStateShape => ({
   gameState: GameState.Idle,
   questions: [],
   currentQuestionIndex: 0,
@@ -30,27 +35,34 @@ const initialState: GameStateShape = {
   vibe: null,
   feedback: null,
   isProcessingAnswer: false,
-  time: 0,
-  theme: 'dark', // Default, will be updated by effect
+  time: QUESTION_TIME_LIMIT,
+  theme: 'dark',
   isDemoMode: false,
-};
+  isMuted: true,
+  isHapticEnabled: true,
+});
 
-// Define a new action type specifically for setting the initial theme.
-type SetThemeAction = { type: 'SET_THEME'; payload: Theme };
+// Define private action types for setting initial state values.
+type PrivateAction = 
+  | { type: 'SET_THEME'; payload: Theme }
+  | { type: 'SET_SOUND'; payload: boolean }
+  | { type: 'SET_HAPTIC'; payload: boolean };
 
-const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispatch<Action | SetThemeAction> } | undefined>(undefined);
+const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispatch<Action | PrivateAction> } | undefined>(undefined);
 
-const gameReducer = (state: GameStateShape, action: Action | SetThemeAction): GameStateShape => {
+const gameReducer = (state: GameStateShape, action: Action | PrivateAction): GameStateShape => {
   switch (action.type) {
     case 'START_GAME':
-      return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'START_DEMO':
-      return { ...initialState, theme: state.theme, gameState: GameState.Loading, isDemoMode: true };
+      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, isDemoMode: true };
     case 'GAME_LOAD_SUCCESS':
-      return { ...state, gameState: GameState.Playing, questions: action.payload };
+      return { ...state, gameState: GameState.Playing, questions: action.payload, time: QUESTION_TIME_LIMIT };
     case 'GAME_LOAD_FAILURE':
       return { ...state, gameState: GameState.Error, error: action.payload };
     case 'ANSWER_QUESTION':
+      // Prevent answering if already answered
+      if (state.userAnswers.length > state.currentQuestionIndex) return state;
       return { ...state, userAnswers: [...state.userAnswers, action.payload] };
     case 'PROCESS_ANSWER_START':
       return { ...state, isProcessingAnswer: true };
@@ -62,17 +74,17 @@ const gameReducer = (state: GameStateShape, action: Action | SetThemeAction): Ga
       return { ...state, feedback: null };
     case 'NEXT_QUESTION':
       if (state.currentQuestionIndex < state.questions.length - 1) {
-        return { ...state, currentQuestionIndex: state.currentQuestionIndex + 1 };
+        return { ...state, currentQuestionIndex: state.currentQuestionIndex + 1, time: QUESTION_TIME_LIMIT };
       }
       return state; // No change if it's the last question
     case 'FINISH_GAME':
       return { ...state, gameState: GameState.Finished };
     case 'RESTART_GAME':
-      return { ...initialState, theme: state.theme };
+      return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled };
     case 'CONTINUE_TO_NEXT_VIBE':
-        return { ...initialState, theme: state.theme, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
+        return { ...getInitialState(), theme: state.theme, isMuted: state.isMuted, isHapticEnabled: state.isHapticEnabled, gameState: GameState.Loading, vibe: action.payload, isDemoMode: false };
     case 'TICK_TIMER':
-        return { ...state, time: state.time + 1 };
+        return { ...state, time: Math.max(0, state.time - 1) };
     case 'TOGGLE_THEME': {
       const newTheme = state.theme === 'light' ? 'dark' : 'light';
       localStorage.setItem('theme', newTheme);
@@ -83,49 +95,65 @@ const gameReducer = (state: GameStateShape, action: Action | SetThemeAction): Ga
       }
       return { ...state, theme: newTheme };
     }
+    case 'TOGGLE_SOUND': {
+      const newMutedState = !state.isMuted;
+      localStorage.setItem('soundMuted', JSON.stringify(newMutedState));
+      return { ...state, isMuted: newMutedState };
+    }
+    case 'TOGGLE_HAPTIC': {
+        const newHapticState = !state.isHapticEnabled;
+        localStorage.setItem('hapticEnabled', JSON.stringify(newHapticState));
+        return { ...state, isHapticEnabled: newHapticState };
+    }
     case 'SET_THEME':
       return { ...state, theme: action.payload };
+    case 'SET_SOUND':
+      return { ...state, isMuted: action.payload };
+    case 'SET_HAPTIC':
+        return { ...state, isHapticEnabled: action.payload };
     default:
       return state;
   }
 };
 
 export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [state, dispatch] = useReducer(gameReducer, getInitialState());
   const timerRef = useRef<number | null>(null);
   
-  // Refactored effect for setting initial theme
+  // Effect for setting initial theme, sound, and haptic state from localStorage
   useEffect(() => {
+    // Theme
     const storedTheme = localStorage.getItem('theme') as Theme | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
 
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // Set the theme in state without causing a re-toggle
+    if (initialTheme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
     dispatch({ type: 'SET_THEME', payload: initialTheme });
-  }, []); // Run only once on mount
+
+    // Sound (default to not muted)
+    const storedMuted = localStorage.getItem('soundMuted');
+    const initialMuted = storedMuted ? JSON.parse(storedMuted) : false;
+    dispatch({ type: 'SET_SOUND', payload: initialMuted });
+
+    // Haptic (default to enabled)
+    const storedHaptic = localStorage.getItem('hapticEnabled');
+    const initialHaptic = storedHaptic ? JSON.parse(storedHaptic) : true;
+    dispatch({ type: 'SET_HAPTIC', payload: initialHaptic });
+  }, []);
 
 
   // Effect for fetching questions when game starts
   useEffect(() => {
     if (state.gameState === GameState.Loading) {
       if (state.isDemoMode) {
-        // In demo mode, shuffle static questions and pick 5 for a quick, variable game.
         setTimeout(() => {
           const shuffled = [...demoQuestions].sort(() => 0.5 - Math.random());
           dispatch({ type: 'GAME_LOAD_SUCCESS', payload: shuffled.slice(0, 5) });
         }, 800);
       } else if (state.vibe) {
-        // In a real game, fetch from the API
         fetchQuizQuestions(state.vibe)
-          .then(questions => {
-            dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions });
-          })
+          .then(questions => dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions }))
           .catch(err => {
             console.error(err);
             const message = err instanceof Error ? err.message : 'An unknown cosmic anomaly occurred.';
@@ -135,59 +163,84 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     }
   }, [state.gameState, state.vibe, state.isDemoMode]);
   
-  // Effect for managing the game timer
+  // Effect for managing the game timer (countdown)
   useEffect(() => {
-    if (state.gameState === GameState.Playing) {
-      timerRef.current = window.setInterval(() => {
-        dispatch({ type: 'TICK_TIMER' });
-      }, 1000);
-    } else {
+    const clearTimer = () => {
       if (timerRef.current) {
-        clearInterval(timerRef.current);
+        clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [state.gameState]);
+
+    if (state.gameState === GameState.Playing) {
+      const hasAnswered = state.userAnswers.length > state.currentQuestionIndex;
+      if (state.time > 0 && !hasAnswered) {
+        timerRef.current = window.setTimeout(() => {
+          dispatch({ type: 'TICK_TIMER' });
+        }, 1000);
+      } else if (state.time === 0 && !hasAnswered) {
+        dispatch({ type: 'ANSWER_QUESTION', payload: ANSWER_TIMED_OUT });
+      }
+    } else {
+      clearTimer();
+    }
+    
+    return clearTimer;
+  }, [state.gameState, state.time, state.currentQuestionIndex, state.userAnswers.length]);
   
   // Effect for processing answers
   useEffect(() => {
+    // This effect runs only when a new answer has been submitted.
     if (state.userAnswers.length === state.currentQuestionIndex + 1 && state.gameState === GameState.Playing) {
       const processAnswer = async () => {
         dispatch({ type: 'PROCESS_ANSWER_START' });
 
         const currentQuestion = state.questions[state.currentQuestionIndex];
         const userAnswer = state.userAnswers[state.currentQuestionIndex];
+        const isTimedOut = userAnswer === ANSWER_TIMED_OUT;
+        const isCorrect = !isTimedOut && userAnswer.trim().toLowerCase() === currentQuestion.answer.trim().toLowerCase();
         
         let feedbackToShow: string | null = null;
+        let hapticPattern: HapticPattern | null = null;
         let delay = 500;
 
-        if (state.isDemoMode && currentQuestion.demoFeedback && currentQuestion.demoFeedback.length > 0) {
-            // In demo mode, use pre-written feedback by randomly selecting one
-            const feedbackOptions = currentQuestion.demoFeedback;
-            const randomIndex = Math.floor(Math.random() * feedbackOptions.length);
-            feedbackToShow = feedbackOptions[randomIndex];
-        } else if (!state.isDemoMode && currentQuestion.type === QuestionType.ShortAnswer && Math.random() < 0.4) {
-            // In a real game, try fetching live feedback
-            try {
-                feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer);
-            } catch (error) {
-                console.error("Failed to get feedback, proceeding without it.", error);
+        if(isTimedOut) {
+            feedbackToShow = "Time's Up!";
+            hapticPattern = 'time_up';
+            if (!state.isMuted) playSound('incorrect');
+        } else {
+            hapticPattern = isCorrect ? 'correct' : 'incorrect';
+            if (!state.isMuted) playSound(isCorrect ? 'correct' : 'incorrect');
+
+            const isTextEntry = currentQuestion.type === QuestionType.ShortAnswer || currentQuestion.type === QuestionType.ImageQuestion;
+            if (state.isDemoMode && isTextEntry && currentQuestion.demoFeedback?.length) {
+                const feedbackOptions = currentQuestion.demoFeedback;
+                feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
+            } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.4) {
+                try {
+                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer);
+                } catch (error) {
+                    console.error("Failed to get feedback, proceeding without it.", error);
+                }
             }
+        }
+        
+        if (state.isHapticEnabled && hapticPattern) {
+            triggerHaptic(hapticPattern);
         }
 
         if (feedbackToShow) {
             dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
-            delay = 4000; // Give user time to read feedback
+            delay = 4000;
         }
 
         setTimeout(() => {
           dispatch({ type: 'HIDE_FEEDBACK' });
           if (state.currentQuestionIndex < state.questions.length - 1) {
+            if (!state.isMuted) playSound('next');
             dispatch({ type: 'NEXT_QUESTION' });
           } else {
+            if (!state.isMuted) playSound('finish');
             dispatch({ type: 'FINISH_GAME' });
           }
           dispatch({ type: 'PROCESS_ANSWER_END' });
@@ -196,7 +249,8 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       
       processAnswer();
     }
-  }, [state.userAnswers, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode]);
+  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, dispatch]);
+
 
   return (
     <GameContext.Provider value={{ state, dispatch }}>

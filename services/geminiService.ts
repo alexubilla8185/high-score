@@ -172,6 +172,7 @@ export const fetchQuizQuestions = async (vibe: Vibe): Promise<Question[]> => {
         throw new Error("All generated questions were invalid after processing.");
     }
 
+    // Shuffle the final list of questions to add more variety
     for (let i = finalQuestions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [finalQuestions[i], finalQuestions[j]] = [finalQuestions[j], finalQuestions[i]];
@@ -207,6 +208,8 @@ export const fetchFunnyFeedback = async (question: string, userAnswer: string): 
         return feedbackText;
     } catch (error) {
         console.error("Error fetching funny feedback:", error);
+        // Instead of throwing an error that could break the game flow, return a graceful fallback.
+        // The calling function will proceed without feedback.
         if (error instanceof Error) {
             throw error; // Re-throw to be handled by the caller
         }

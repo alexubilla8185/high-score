@@ -1,19 +1,18 @@
-
 import React, { useState, useEffect, FormEvent } from 'react';
 import { QuestionType } from '../types';
 import { useGame } from '../context/GameContext';
 
 const QuestionCard: React.FC = () => {
   const { state, dispatch } = useGame();
-  const { questions, currentQuestionIndex } = state;
+  const { questions, currentQuestionIndex, userAnswers } = state;
   const question = questions[currentQuestionIndex];
 
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [isAnswered, setIsAnswered] = useState(false);
+  const isAnswered = userAnswers.length > currentQuestionIndex;
 
   useEffect(() => {
+    // Reset local input when the question changes
     setSelectedAnswer('');
-    setIsAnswered(false);
   }, [question]);
 
   const handleAnswer = (answer: string) => {
@@ -23,7 +22,6 @@ const QuestionCard: React.FC = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!selectedAnswer.trim() || isAnswered) return;
-    setIsAnswered(true);
     handleAnswer(selectedAnswer.trim());
   };
 
@@ -35,16 +33,18 @@ const QuestionCard: React.FC = () => {
             <button
               key={index}
               onClick={() => {
+                if (isAnswered) return;
                 setSelectedAnswer(option);
-                setIsAnswered(true);
                 handleAnswer(option);
               }}
               disabled={isAnswered}
               className={`w-full p-4 rounded-lg text-left transition-all duration-300 transform font-semibold border-2 
-                ${selectedAnswer === option 
-                  ? 'bg-[#0079FF] text-white border-[#00DFA2] scale-105 shadow-lg' 
+                ${isAnswered && question.answer === option
+                  ? 'bg-[#00DFA2] text-black border-[#00DFA2] scale-105 shadow-lg' // Correct answer shown after answering
+                  : isAnswered && userAnswers[currentQuestionIndex] === option
+                  ? 'bg-pink-200 dark:bg-[#FF0060]/50 text-black dark:text-white border-[#FF0060] scale-100' // Incorrect answer shown
                   : 'bg-white/50 dark:bg-neutral-900/50 border-gray-200 dark:border-neutral-800 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#00DFA2]'}
-                ${isAnswered ? 'opacity-50 cursor-not-allowed' : ''}
+                ${isAnswered ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2]`}
             >
               {option}
@@ -86,7 +86,7 @@ const QuestionCard: React.FC = () => {
             disabled={!selectedAnswer || isAnswered}
             className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
           >
-            {isAnswered ? 'Submitted...' : 'Confirm Answer'}
+            {isAnswered ? 'Thinking...' : 'Confirm Answer'}
           </button>
         )}
       </form>

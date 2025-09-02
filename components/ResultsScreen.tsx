@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { QuestionType, Vibe } from '../types';
 import { useGame } from '../context/GameContext';
@@ -14,6 +13,15 @@ const XIcon = () => (
     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.697a1 1 0 010-1.414z" clipRule="evenodd" />
   </svg>
 );
+
+const ClockIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 dark:text-[#F6FA70]" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clipRule="evenodd" />
+    </svg>
+);
+
+
+const ANSWER_TIMED_OUT = '__TIMES_UP__';
 
 const ResultsScreen: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -49,18 +57,14 @@ const ResultsScreen: React.FC = () => {
     };
 
     try {
-      // Use Web Share API if available
       if (navigator.share) {
         await navigator.share(shareData);
-        console.log('Score shared successfully!');
       } else {
-        // Fallback for desktop or unsupported browsers
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
         window.open(twitterUrl, '_blank');
       }
     } catch (err) {
       console.error('Error sharing score:', err);
-      // Fallback in case of share API error
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
       window.open(twitterUrl, '_blank');
     }
@@ -76,14 +80,14 @@ const ResultsScreen: React.FC = () => {
       )}
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
-        <p className={`text-5xl font-bold ${color}`}>{title}</p>
+        <p className={`text-4xl sm:text-5xl font-bold ${color}`}>{title}</p>
         <p className="text-2xl text-neutral-600 dark:text-neutral-300 mt-2">{level}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 text-center mb-8">
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{score}%</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Time</p><p className="text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{score}%</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-2xl sm:text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Total Time</p><p className="text-2xl sm:text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
       </div>
       
       <div className="bg-gray-100 dark:bg-neutral-900/50 p-6 rounded-lg mb-8 text-center"><h3 className="text-xl font-semibold text-teal-600 dark:text-[#00DFA2] mb-2">Cosmic Advice</h3><p className="text-neutral-600 dark:text-neutral-300">{tip}</p></div>
@@ -92,14 +96,29 @@ const ResultsScreen: React.FC = () => {
         <h3 className="text-2xl font-bold text-center mb-4">Your Answers</h3>
         <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
             {questions.map((q, i) => {
-              const isCorrect = userAnswers[i]?.toLowerCase() === q.answer.toLowerCase();
+              const userAnswer = userAnswers[i] || "";
+              const isTimedOut = userAnswer === ANSWER_TIMED_OUT;
+              const isCorrect = userAnswer.toLowerCase() === q.answer.toLowerCase();
+              
+              const borderColor = isCorrect ? '#00DFA2' : (isTimedOut ? '#F59E0B' : '#FF0060');
+
+              const renderUserAnswer = () => {
+                  if (isTimedOut) {
+                      return <><ClockIcon /><p className="ml-2 text-yellow-600 dark:text-yellow-400">Time's up</p></>;
+                  }
+                  if (isCorrect) {
+                      return <><CheckIcon /><p className="ml-2 text-neutral-600 dark:text-neutral-300">{userAnswer}</p></>;
+                  }
+                  return <><XIcon /><p className={`ml-2 text-pink-600 dark:text-[#FF0060] line-through`}>{userAnswer}</p></>;
+              }
+
               return (
-                <div key={i} className="bg-gray-100/80 dark:bg-neutral-900/50 p-4 rounded-lg border-l-4" style={{borderColor: isCorrect ? '#00DFA2' : '#FF0060'}}>
+                <div key={i} className="bg-gray-100/80 dark:bg-neutral-900/50 p-4 rounded-lg border-l-4" style={{ borderColor }}>
                     <div className="flex items-start gap-4">
                         {q.type === QuestionType.ImageQuestion && q.imageUrl && <img src={q.imageUrl} alt="Quiz image thumbnail" className="w-16 h-16 rounded-md object-cover flex-shrink-0"/>}
                         <div className="flex-grow">
                             <p className="font-semibold text-neutral-800 dark:text-neutral-200">{q.question}</p>
-                            <div className="flex items-center mt-2">{isCorrect ? <CheckIcon /> : <XIcon />}<p className={`ml-2 ${isCorrect ? 'text-neutral-600 dark:text-neutral-300' : 'text-pink-600 dark:text-[#FF0060] line-through'}`}>{userAnswers[i] || "No answer"}</p></div>
+                            <div className="flex items-center mt-2">{renderUserAnswer()}</div>
                             {!isCorrect && <p className="text-teal-600 dark:text-[#00DFA2] mt-1">Correct answer: {q.answer}</p>}
                             <p className="text-sm text-neutral-500 dark:text-neutral-400 italic mt-2">{q.explanation}</p>
                         </div>

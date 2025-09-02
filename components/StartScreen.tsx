@@ -1,10 +1,14 @@
-
-
 import React, { useState } from 'react';
 import { Vibe } from '../types';
 import { useGame } from '../context/GameContext';
 import HowItWorksModal from './HowItWorksModal';
 import Logo from './Logo';
+
+const InfoIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
 
 const BuzzedIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-yellow-500 dark:text-[#F6FA70] group-hover:animate-pulse">
@@ -66,12 +70,17 @@ const StartScreen: React.FC = () => {
                 >
                 How High
                 </button>
-                <button 
-                  onClick={handleDemo}
-                  className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold text-lg py-4 px-8 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
-                >
-                  Try a Demo
-                </button>
+                <div className="w-full text-center">
+                  <button 
+                    onClick={handleDemo}
+                    className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold text-lg py-4 px-8 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                  >
+                    Try a Demo
+                  </button>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2 px-2">
+                    Showcases countdown timer, sounds & haptics!
+                  </p>
+                </div>
             </div>
           </div>
         ) : (
@@ -102,17 +111,17 @@ const StartScreen: React.FC = () => {
           </div>
         )}
       </div>
-
-      <div className="fixed bottom-6 right-6">
+      
+      <div className="fixed bottom-4 right-4 z-20">
         <button
           onClick={() => setShowModal(true)}
           aria-label="How it works"
-          className="w-14 h-14 bg-gradient-to-br from-[#0079FF] to-[#00DFA2] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform transform hover:shadow-[#0079FF]/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="w-14 h-14 md:w-16 md:h-16 bg-gray-200/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-800 dark:text-white shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <InfoIcon />
         </button>
       </div>
-      
+
       {showModal && <HowItWorksModal onClose={() => setShowModal(false)} />}
     </>
   );
