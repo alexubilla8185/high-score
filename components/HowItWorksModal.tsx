@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 interface HowItWorksModalProps {
@@ -28,7 +27,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
         <p>This is a modern web app built with React, TypeScript, and TailwindCSS. It leverages the Google Gemini API for dynamic, AI-powered content.</p>
         <ul className="list-disc list-inside space-y-3 pl-2">
           <li><strong>Architecture:</strong> State is managed globally with React's Context API and a `useReducer` hook for predictable state transitions.</li>
-          <li><strong>AI Integration:</strong> We use the `@google/genai` SDK to communicate with the `gemini-2.5-flash` model for generating questions and `imagen-3.0-generate-002` for images.</li>
+          <li><strong>AI Integration:</strong> We use the `@google/genai` SDK to communicate with the `gemini-2.5-flash` model for generating questions and `imagen-4.0-generate-001` for images.</li>
           <li><strong>Structured Output:</strong> We send a detailed prompt and a `responseSchema` to the Gemini API, forcing it to return a clean JSON array of questions, which we then parse and display. This ensures reliability.</li>
           <li><strong>Resiliency:</strong> Image generation includes a retry mechanism, and if it still fails, it gracefully falls back to a text-based question to ensure the quiz is never broken.</li>
         </ul>
