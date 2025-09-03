@@ -71,12 +71,12 @@ const App: React.FC = () => {
                   <Timer time={time} />
               </div>
               <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2.5 mb-2">
-                  <div className="bg-gradient-to-r from-[#0079FF] to-[#00DFA2] h-2.5 rounded-full" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`, transition: 'width 0.5s ease-in-out' }}></div>
+                  <div className="bg-gradient-to-r from-[#0079FF] to-[#00DFA2] h-2.5 rounded-full progress-bar-inner" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}></div>
               </div>
               <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-1.5 mb-6">
                 <div 
-                    className="bg-yellow-400 dark:bg-[#F6FA70] h-1.5 rounded-full" 
-                    style={{ width: `${timePercentage}%`, transition: 'width 1s linear' }}
+                    className="bg-yellow-400 dark:bg-[#F6FA70] h-1.5 rounded-full timer-bar-inner" 
+                    style={{ width: `${timePercentage}%` }}
                 ></div>
               </div>
             </div>

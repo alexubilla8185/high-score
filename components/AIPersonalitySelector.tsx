@@ -24,7 +24,7 @@ const AIPersonalitySelector: React.FC = () => {
                     <button
                         key={option.id}
                         onClick={() => handlePersonalityChange(option.id)}
-                        className={`relative flex-1 px-2 sm:px-4 py-2 text-sm sm:text-base font-bold rounded-full transition-colors duration-300 focus:outline-none z-10 ${
+                        className={`relative flex-1 px-2 sm:px-4 py-2 text-sm sm:text-base font-bold rounded-full transition-colors duration-300 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-200 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-[#0079FF] ${
                             aiPersonality === option.id
                                 ? 'text-white'
                                 : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'

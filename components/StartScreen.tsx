@@ -1,17 +1,10 @@
-
 import React, { useState } from 'react';
 import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 import NerdSpecsModal from './NerdSpecsModal';
 import Logo from './Logo';
-import SignInModal from './SignInModal';
+import AuthModal from './AuthModal';
 import AIPersonalitySelector from './AIPersonalitySelector';
-
-const GoProIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-500 dark:text-[#0079FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
-);
 
 const BuzzedIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-yellow-500 dark:text-[#F6FA70] group-hover:animate-pulse">
@@ -47,24 +40,20 @@ const StartScreen: React.FC = () => {
     const { isPro, aiPersonality } = state;
     
     const [showNerdSpecsModal, setShowNerdSpecsModal] = useState(false);
-    const [isSignInModalVisible, setSignInModalVisible] = useState(false);
-    const [splashTapped, setSplashTapped] = useState(false);
+    const [isAuthModalVisible, setAuthModalVisible] = useState(false);
     
     const handleStartGame = (vibe: Vibe) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
     };
 
     const handleTakeTour = () => {
+        setAuthModalVisible(false);
         dispatch({ type: 'START_DEMO_TOUR' });
-    };
-
-    const handleGoProClick = () => {
-        setSignInModalVisible(true);
     };
 
     const handleSignInSuccess = () => {
         dispatch({ type: 'UPGRADE_TO_PRO' });
-        setSignInModalVisible(false);
+        setAuthModalVisible(false);
     };
     
     const handleLogout = () => {
@@ -72,13 +61,13 @@ const StartScreen: React.FC = () => {
     };
 
     const handleSplashTap = () => {
-        setSplashTapped(!splashTapped);
+        setAuthModalVisible(true);
     };
 
-    return (
-        <>
-            {/* The Vibe selection screen for Pro users */}
-            {isPro && (
+    // Render the Pro user experience
+    if (isPro) {
+        return (
+            <>
                 <div className="w-full max-w-4xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
                     <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
                     <h1 className="sr-only">High Score</h1>
@@ -110,70 +99,37 @@ const StartScreen: React.FC = () => {
                         </button>
                     </div>
                 </div>
-            )}
+                {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
+            </>
+        );
+    }
+
+    // Render the non-Pro user experience
+    return (
+        <>
+            <div 
+                className="w-full h-full flex flex-col items-center justify-center text-center p-4 animate-card-fade-in-up cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-4 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black rounded-full" 
+                onClick={handleSplashTap}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => ['Enter', ' '].includes(e.key) && handleSplashTap()}
+                aria-label="Tap to begin"
+            >
+                <Logo 
+                    className="w-48 h-48 sm:w-56 sm:h-56" 
+                    onTripleClick={() => setShowNerdSpecsModal(true)}
+                />
+            </div>
             
-            {/* The Welcome/Splash screen for non-Pro users */}
-            {!isPro && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
-                    { !splashTapped ? (
-                        <div className="animate-card-fade-in-up cursor-pointer" onClick={handleSplashTap}>
-                            <Logo 
-                                className="w-48 h-48 sm:w-56 sm:h-56" 
-                                onTripleClick={() => setShowNerdSpecsModal(true)}
-                            />
-                            <p className="mt-4 text-xl font-semibold text-neutral-500 animate-pulse">Tap the face to begin</p>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center animate-card-fade-in-up">
-                            <div className="w-full max-w-lg bg-white/60 dark:bg-black/20 backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 p-6 grid sm:grid-cols-2 gap-6 items-center">
-                                {/* Left side: Logo & Tour Button */}
-                                <div className="relative flex flex-col items-center justify-center">
-                                    <Logo 
-                                        onClick={handleSplashTap} 
-                                        className="w-32 h-32 cursor-pointer"
-                                        onTripleClick={() => setShowNerdSpecsModal(true)}
-                                    />
-                                    <button
-                                        onClick={handleTakeTour}
-                                        className="mt-[-25px] relative z-10 bg-gradient-to-r from-[#FF0060] to-pink-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:scale-105 transition-transform transform"
-                                    >
-                                        Take the Tour
-                                    </button>
-                                </div>
-                                
-                                {/* Right side: Go Pro */}
-                                <div className="flex flex-col text-center sm:text-left h-full justify-center space-y-4">
-                                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                                        <GoProIcon /> 
-                                        <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0079FF] to-[#00DFA2] text-transparent bg-clip-text ml-2">
-                                            Go Pro
-                                        </h2>
-                                    </div>
-                                    <p className="text-neutral-600 dark:text-neutral-300">
-                                        Unlock themes, sounds, haptics, and more AI personalities.
-                                    </p>
-                                    <button
-                                        onClick={handleGoProClick}
-                                        className="w-full bg-gradient-to-r from-teal-400 to-green-500 text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-teal-500/30 dark:hover:shadow-teal-400/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"
-                                    >
-                                        Sign In
-                                    </button>
-                                </div>
-                            </div>
-                            <p className="text-xs text-neutral-500 mt-4 text-center">(Tap the face again to go back)</p>
-                        </div>
-                    )}
-                </div>
+            {isAuthModalVisible && (
+                <AuthModal 
+                    onClose={() => setAuthModalVisible(false)}
+                    onSignInSuccess={handleSignInSuccess}
+                    onTakeTour={handleTakeTour}
+                />
             )}
             
             {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
-
-            {isSignInModalVisible && (
-                <SignInModal 
-                    onClose={() => setSignInModalVisible(false)}
-                    onSignInSuccess={handleSignInSuccess}
-                />
-            )}
         </>
     );
 };

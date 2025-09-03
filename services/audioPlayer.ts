@@ -14,7 +14,8 @@ export const playSound = (sound: SoundType) => {
     audio.src = sounds[sound];
     audio.play().catch(error => {
       // Autoplay can be blocked by the browser, log error if it happens.
-      console.error(`Audio play failed for sound: ${sound}`, error);
+      // FIX: Explicitly convert `sound` to a string to prevent potential runtime errors with symbols.
+      console.error(`Audio play failed for sound: ${String(sound)}`, error);
     });
   }
 };

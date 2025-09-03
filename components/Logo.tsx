@@ -4,9 +4,10 @@ interface LogoProps {
   onTripleClick?: () => void;
   onClick?: () => void;
   className?: string;
+  eyesDown?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
+const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, eyesDown = false }) => {
   const clickCount = useRef(0);
   const clickTimer = useRef<number | null>(null);
 
@@ -49,11 +50,22 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
     }
   };
   
+  const leftEyePath = eyesDown ? "M28 52 C 34 58, 40 58, 46 52" : "M28 50 C 34 44, 40 44, 46 50";
+  const rightEyePath = eyesDown ? "M54 52 C 60 58, 66 58, 72 52" : "M54 50 C 60 44, 66 44, 72 50";
+
   return (
     <div
       onClick={handleWrapperClick}
-      className={onClick ? 'cursor-pointer' : ''}
-      title={onClick ? 'Back to Home / Toggle View' : 'What secrets do you hold?'}
+      className={onClick ? 'cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-4 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black rounded-full' : ''}
+      title={onClick ? 'Back to Home / Restart Game' : 'What secrets do you hold?'}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : -1}
+      onKeyPress={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            onClick();
+        }
+      }}
     >
       <svg
         viewBox="0 0 100 100"
@@ -89,9 +101,9 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
         {/* Face */}
         <circle cx="50" cy="50" r="48" fill="url(#logo-gradient)" />
 
-        {/* Eyes (happy/high) - Changed from droopy to happy arcs */}
-        <path d="M28 50 C 34 44, 40 44, 46 50" stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" />
-        <path d="M54 50 C 60 44, 66 44, 72 50" stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" />
+        {/* Eyes (happy/high) - with transition */}
+        <path d={leftEyePath} stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" style={{ transition: 'd 0.3s ease-in-out' }} />
+        <path d={rightEyePath} stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" style={{ transition: 'd 0.3s ease-in-out' }} />
         
         {/* Mouth (simple smile) */}
         <path d="M35 70 Q 50 85, 65 70" stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" />

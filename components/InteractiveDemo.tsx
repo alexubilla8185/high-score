@@ -56,7 +56,10 @@ const InteractiveDemo: React.FC = () => {
     const handleNext = () => setStep(s => Math.min(s + 1, steps.length - 1));
     const handleBack = () => setStep(s => Math.max(s - 1, 0));
     const handleClose = () => dispatch({ type: 'RESTART_GAME' });
-    const handleGoPro = () => dispatch({ type: 'UPGRADE_TO_PRO' });
+    const handleGoPro = () => {
+      handleClose(); // Close tour first
+      dispatch({ type: 'UPGRADE_TO_PRO' });
+    }
     const handleStartDemo = () => dispatch({ type: 'START_DEMO' });
 
     const currentStep = steps[step];
@@ -66,10 +69,10 @@ const InteractiveDemo: React.FC = () => {
             case 'feedback':
                 return (
                     <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                        <button onClick={() => { playSound('correct'); triggerHaptic('correct'); }} className="flex-1 p-3 bg-teal-500/20 text-teal-600 dark:text-[#00DFA2] rounded-lg border border-teal-500/30 hover:bg-teal-500/30 transition-colors">
+                        <button onClick={() => { playSound('correct'); triggerHaptic('correct'); }} className="flex-1 p-3 bg-teal-500/20 text-teal-600 dark:text-[#00DFA2] rounded-lg border border-teal-500/30 hover:bg-teal-500/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-teal-500">
                             Simulate Correct
                         </button>
-                         <button onClick={() => { playSound('incorrect'); triggerHaptic('incorrect'); }} className="flex-1 p-3 bg-pink-500/20 text-pink-600 dark:text-[#FF0060] rounded-lg border border-pink-500/30 hover:bg-pink-500/30 transition-colors">
+                         <button onClick={() => { playSound('incorrect'); triggerHaptic('incorrect'); }} className="flex-1 p-3 bg-pink-500/20 text-pink-600 dark:text-[#FF0060] rounded-lg border border-pink-500/30 hover:bg-pink-500/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-pink-500">
                             Simulate Incorrect
                         </button>
                     </div>
@@ -84,10 +87,10 @@ const InteractiveDemo: React.FC = () => {
             case 'final':
                 return (
                     <div className="flex flex-col gap-3 mt-6">
-                        <button onClick={handleGoPro} className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform">
-                            Go Pro
+                        <button onClick={handleGoPro} className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]">
+                            Sign In & Go Pro
                         </button>
-                        <button onClick={handleStartDemo} className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] transition-all duration-300 transform">
+                        <button onClick={handleStartDemo} className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-700 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-800/50 hover:border-[#0079FF] transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]">
                             Play Classic Demo
                         </button>
                     </div>
@@ -98,9 +101,9 @@ const InteractiveDemo: React.FC = () => {
     }
 
     return (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in">
-            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-t-2 sm:border-2 border-gray-200 dark:border-neutral-800/50 rounded-t-2xl sm:rounded-2xl shadow-2xl p-4 pt-6 sm:p-8 flex flex-col h-auto max-h-[85vh] sm:max-h-[90vh] animate-card-fade-in-up">
-                <button onClick={handleClose} className="absolute top-3 right-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]" aria-label="Close Tour">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in">
+            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-2 border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh] animate-card-fade-in-up">
+                <button onClick={handleClose} className="absolute top-3 right-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black" aria-label="Close Tour">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
                 
@@ -117,18 +120,22 @@ const InteractiveDemo: React.FC = () => {
                 </div>
                 
                 {currentStep.interactive !== 'final' && (
-                    <div className="flex-shrink-0 flex justify-between items-center mt-auto pt-4 border-t border-gray-200 dark:border-neutral-800/50">
-                        <button onClick={handleBack} disabled={step === 0} className="px-4 py-2 text-neutral-500 rounded-md disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]">Back</button>
+                     <div className="flex-shrink-0 grid grid-cols-3 items-center mt-auto pt-4 border-t border-gray-200 dark:border-neutral-800/50">
+                        <div className="text-left">
+                            <button onClick={handleBack} disabled={step === 0} className="px-4 py-2 text-neutral-500 rounded-md disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black">Back</button>
+                        </div>
                         
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                             {steps.map((_, i) => (
                                 <div key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i === step ? 'bg-[#0079FF]' : 'bg-gray-300 dark:bg-neutral-700'}`}></div>
                             ))}
                         </div>
                         
-                        <button onClick={handleNext} className="px-4 py-2 bg-[#0079FF] text-white font-bold rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2]">
-                            {step === steps.length - 2 ? 'Finish' : 'Next'}
-                        </button>
+                        <div className="text-right">
+                           <button onClick={handleNext} className="px-4 py-2 bg-[#0079FF] text-white font-bold rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]">
+                                {step === steps.length - 2 ? 'Finish' : 'Next'}
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>

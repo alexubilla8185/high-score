@@ -59,7 +59,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
           <h2 id="how-it-works-title" className="text-2xl font-bold text-gray-900 dark:text-white">How It Works</h2>
           <button
             onClick={onClose}
-            className="text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]"
+            className="text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
             aria-label="Close"
           >
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>

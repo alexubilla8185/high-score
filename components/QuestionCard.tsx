@@ -46,7 +46,7 @@ const QuestionCard: React.FC = () => {
                   ? 'bg-pink-200 dark:bg-[#FF0060]/50 text-black dark:text-white border-[#FF0060] scale-100' // Incorrect answer shown
                   : 'bg-white/50 dark:bg-neutral-900/50 border-gray-200 dark:border-neutral-800 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#00DFA2]'}
                 ${isAnswered ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2]`}
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]`}
             >
               {option}
             </button>
@@ -61,7 +61,7 @@ const QuestionCard: React.FC = () => {
         onChange={(e) => setSelectedAnswer(e.target.value)}
         disabled={isAnswered}
         placeholder="Type your answer here..."
-        className="w-full bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-lg p-4 text-black dark:text-white focus:ring-2 focus:ring-[#0079FF] focus:border-[#0079FF] outline-none transition-colors disabled:opacity-50"
+        className="w-full bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-lg p-4 text-black dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900 transition-colors disabled:opacity-50"
         autoFocus
       />
     );
@@ -85,7 +85,7 @@ const QuestionCard: React.FC = () => {
           <button
             type="submit"
             disabled={!selectedAnswer || isAnswered}
-            className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
+            className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
           >
             {isAnswered ? 'Thinking...' : 'Confirm Answer'}
           </button>
