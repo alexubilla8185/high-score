@@ -80,7 +80,7 @@ const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSignInSuccess }) =
           </div>
 
           {error && (
-            <p className="text-sm text-center text-pink-600 dark:text-[#FF0060] animate-fade-in">{error}</p>
+            <p className="text-sm text-center text-pink-600 dark:text-[#FF0060] animate-modal-fade-in">{error}</p>
           )}
 
           <div>

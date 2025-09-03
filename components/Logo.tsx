@@ -4,10 +4,9 @@ interface LogoProps {
   onTripleClick?: () => void;
   onClick?: () => void;
   className?: string;
-  isAnimating?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimating }) => {
+const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className }) => {
   const clickCount = useRef(0);
   const clickTimer = useRef<number | null>(null);
 
@@ -20,7 +19,7 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimat
     };
   }, []);
 
-  const handleClick = () => {
+  const handleWrapperClick = () => {
     clickCount.current += 1;
 
     // If a multi-click handler exists, use a timeout to differentiate clicks
@@ -52,15 +51,15 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimat
   
   return (
     <div
-      onClick={handleClick}
-      className="cursor-pointer"
-      title={onClick ? 'Back to Home' : 'What secrets do you hold?'}
+      onClick={handleWrapperClick}
+      className={onClick ? 'cursor-pointer' : ''}
+      title={onClick ? 'Back to Home / Toggle View' : 'What secrets do you hold?'}
     >
       <svg
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={`${className || "w-24 h-24 mb-4"} ${isAnimating ? 'animate-tongue' : ''}`}
+        className={`${className || "w-24 h-24 mb-4"}`}
         aria-label="High Score Logo"
       >
         <defs>
@@ -97,9 +96,6 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimat
         {/* Mouth (simple smile) */}
         <path d="M35 70 Q 50 85, 65 70" stroke="white" strokeWidth="5" strokeLinecap="round" fill="transparent" />
         
-        {/* Tongue - Hidden by default, animated with CSS */}
-        <path id="tongue" d="M45 72 C 48 80, 52 80, 55 72 Z" fill="#FF8A8A" stroke="#E57373" strokeWidth="1" style={{ transformOrigin: '50% 72px', transform: 'scaleY(0)' }} />
-
         {/* Joint - Rotated and positioned to come from the side of the smile */}
         <g transform="rotate(15 65 70)">
             {/* Paper */}
@@ -107,6 +103,7 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, isAnimat
             {/* Ash/Tip - now with animated glow */}
             <rect x="95" y="65" width="5" height="10" fill="#FF0060" rx="2" filter="url(#glow)" />
         </g>
+        
       </svg>
     </div>
   );

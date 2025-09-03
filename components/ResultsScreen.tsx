@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { QuestionType, Vibe } from '../types';
 import { useGame } from '../context/GameContext';
@@ -72,7 +73,7 @@ const ResultsScreen: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl p-4 md:p-8 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 animate-fade-in">
+    <div className="w-full max-w-3xl p-4 md:p-8 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 animate-card-fade-in-up">
       {isDemoMode && (
           <div className="text-center mb-6 bg-yellow-400/20 text-yellow-600 dark:text-[#F6FA70] py-2 px-4 rounded-lg border border-yellow-500/30">
               <p className="font-semibold">This is a score from Demo Mode.</p>

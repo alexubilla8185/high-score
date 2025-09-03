@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -47,12 +48,17 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (gameState) {
       case GameState.Loading:
-        return <div className="flex flex-col items-center justify-center h-full"><Spinner /><p className="mt-4 text-lg text-teal-600 dark:text-[#00DFA2]">Generating your cosmic quiz...</p></div>;
+        return (
+          <div className="flex flex-col items-center justify-center h-full animate-card-fade-in-up">
+            <Logo className="w-32 h-32 animate-spin-slow" />
+            <p className="mt-4 text-lg text-teal-600 dark:text-[#00DFA2] animate-pulse-subtle">Generating your cosmic quiz...</p>
+          </div>
+        );
       
       case GameState.Playing:
         const timePercentage = Math.max(0, (time / QUESTION_TIME_LIMIT) * 100);
         return (
-          <>
+          <div key={currentQuestionIndex} className="w-full flex flex-col items-center animate-card-fade-in-up">
             <div className="w-full max-w-2xl mx-auto px-4">
               <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-3">
@@ -65,7 +71,7 @@ const App: React.FC = () => {
                   <Timer time={time} />
               </div>
               <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-2.5 mb-2">
-                  <div className="bg-gradient-to-r from-[#0079FF] to-[#00DFA2] h-2.5 rounded-full" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}></div>
+                  <div className="bg-gradient-to-r from-[#0079FF] to-[#00DFA2] h-2.5 rounded-full" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`, transition: 'width 0.5s ease-in-out' }}></div>
               </div>
               <div className="w-full bg-gray-200 dark:bg-neutral-800 rounded-full h-1.5 mb-6">
                 <div 
@@ -75,7 +81,7 @@ const App: React.FC = () => {
               </div>
             </div>
             <QuestionCard />
-          </>
+          </div>
         );
       
       case GameState.Finished:
@@ -85,7 +91,7 @@ const App: React.FC = () => {
         return <InteractiveDemo />;
       
       case GameState.Error:
-        return <div className="text-center">
+        return <div className="text-center animate-card-fade-in-up">
                 <p className="text-xl text-pink-600 dark:text-[#FF0060]">{error}</p>
                 <button
                   onClick={() => window.location.reload()} // Simple reload to restart fully
