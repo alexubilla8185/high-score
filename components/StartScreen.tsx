@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 import NerdSpecsModal from './NerdSpecsModal';
 import Logo from './Logo';
-import AuthModal from './AuthModal';
 import AIPersonalitySelector from './AIPersonalitySelector';
 
 const BuzzedIcon = () => (
@@ -35,25 +35,19 @@ const vibes = [
   { vibe: Vibe.Voyager, icon: <VoyagerIcon />, title: 'Cosmic Voyager', description: 'Deeply philosophical and reality-bending. For when you want to question everything.' },
 ];
 
-const StartScreen: React.FC = () => {
+interface StartScreenProps {
+  setAuthModalVisible: (visible: boolean) => void;
+}
+
+
+const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
     const { state, dispatch } = useGame();
     const { isPro, aiPersonality } = state;
     
     const [showNerdSpecsModal, setShowNerdSpecsModal] = useState(false);
-    const [isAuthModalVisible, setAuthModalVisible] = useState(false);
     
     const handleStartGame = (vibe: Vibe) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
-    };
-
-    const handleTakeTour = () => {
-        setAuthModalVisible(false);
-        dispatch({ type: 'START_DEMO_TOUR' });
-    };
-
-    const handleSignInSuccess = () => {
-        dispatch({ type: 'UPGRADE_TO_PRO' });
-        setAuthModalVisible(false);
     };
     
     const handleLogout = () => {
@@ -120,14 +114,6 @@ const StartScreen: React.FC = () => {
                     onTripleClick={() => setShowNerdSpecsModal(true)}
                 />
             </div>
-            
-            {isAuthModalVisible && (
-                <AuthModal 
-                    onClose={() => setAuthModalVisible(false)}
-                    onSignInSuccess={handleSignInSuccess}
-                    onTakeTour={handleTakeTour}
-                />
-            )}
             
             {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
         </>

@@ -12,7 +12,7 @@ import FeedbackOverlay from './components/FeedbackOverlay';
 import ThemeToggle from './components/ThemeToggle';
 import SoundToggle from './components/SoundToggle';
 import HapticToggle from './components/HapticToggle';
-import UpgradeModal from './components/UpgradeModal';
+import AuthModal from './components/AuthModal';
 import Logo from './components/Logo';
 import InteractiveDemo from './components/InteractiveDemo';
 import ShareButton from './components/ShareButton';
@@ -31,18 +31,28 @@ const App: React.FC = () => {
     isPro
   } = state;
 
-  const [isUpgradeModalVisible, setUpgradeModalVisible] = useState(false);
+  const [isAuthModalVisible, setAuthModalVisible] = useState(false);
 
   const handlePremiumFeatureToggle = (actionType: 'TOGGLE_HAPTIC' | 'TOGGLE_SOUND' | 'TOGGLE_THEME') => {
     if (isPro) {
       dispatch({ type: actionType });
     } else {
-      setUpgradeModalVisible(true);
+      setAuthModalVisible(true);
     }
   };
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
+  };
+
+  const handleSignInSuccess = () => {
+    dispatch({ type: 'UPGRADE_TO_PRO' });
+    setAuthModalVisible(false);
+  };
+  
+  const handleTakeTour = () => {
+    setAuthModalVisible(false);
+    dispatch({ type: 'START_DEMO_TOUR' });
   };
 
   const renderContent = () => {
@@ -103,7 +113,7 @@ const App: React.FC = () => {
       
       case GameState.Idle:
       default:
-        return <StartScreen />;
+        return <StartScreen setAuthModalVisible={setAuthModalVisible} />;
     }
   };
 
@@ -129,13 +139,11 @@ const App: React.FC = () => {
             <Spinner />
           </div>
         )}
-        {isUpgradeModalVisible && (
-          <UpgradeModal 
-            onClose={() => setUpgradeModalVisible(false)} 
-            onUpgrade={() => {
-              dispatch({ type: 'UPGRADE_TO_PRO' });
-              setUpgradeModalVisible(false);
-            }} 
+        {isAuthModalVisible && !isPro && (
+          <AuthModal 
+            onClose={() => setAuthModalVisible(false)} 
+            onSignInSuccess={handleSignInSuccess}
+            onTakeTour={handleTakeTour}
           />
         )}
     </div>
