@@ -64,7 +64,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
             <>
                 <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
                     <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
-                    <h1 className="sr-only">High Score</h1>
+                    <h1 className="sr-only">Higher Please</h1>
                     <div className="w-full max-w-md flex flex-col items-center">
                         <AIPersonalitySelector />
 

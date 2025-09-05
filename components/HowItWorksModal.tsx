@@ -11,7 +11,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
     if (activeTab === 'noobs') {
       return (
         <div className="space-y-4 text-neutral-600 dark:text-neutral-300">
-          <p>Welcome to High Score! Here’s the simple version:</p>
+          <p>Welcome to Higher Please! Here’s the simple version:</p>
           <ul className="list-disc list-inside space-y-2 pl-2">
             <li><strong>Press 'How High':</strong> You'll choose a "vibe" for your quiz—from lighthearted to mind-bending.</li>
             <li><strong>Answer Questions:</strong> You'll get 10 questions. They can be multiple choice, short answer, or even ask you about a trippy AI-generated image.</li>

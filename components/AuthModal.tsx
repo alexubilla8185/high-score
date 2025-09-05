@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import Logo from './Logo';
@@ -192,7 +193,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
                 <Logo className="w-28 h-28" />
             </div>
             <h2 className="text-3xl font-bold mb-2">Go Cosmic with Pro</h2>
-            <p className="text-neutral-500 dark:text-neutral-400 mb-8">Unlock the full High Score experience.</p>
+            <p className="text-neutral-500 dark:text-neutral-400 mb-8">Unlock the full Higher Please experience.</p>
             
             <div className="space-y-4 text-left mb-8">
                 {proFeatures.map((feature, index) => (

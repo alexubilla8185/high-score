@@ -15,7 +15,7 @@ const AIBanterIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-
 
 const steps = [
     {
-        title: "Welcome to High Score!",
+        title: "Welcome to Higher Please!",
         icon: <Logo className="w-16 h-16" />,
         content: "Ready to test your vibe? This quick tour will show you how our AI-powered quiz works and what you get with Pro.",
     },

@@ -9,8 +9,8 @@ const ShareIcon = () => (
 const ShareButton: React.FC = () => {
     const handleShare = async () => {
         const shareData = {
-            title: 'High Score Quiz',
-            text: `Challenge your mind with this surreal, AI-powered quiz. Can you get a High Score?`,
+            title: 'Higher Please Quiz',
+            text: `Challenge your mind with this surreal, AI-powered quiz. Can you get a higher score?`,
             url: window.location.href,
         };
         try {

@@ -72,7 +72,7 @@ const Logo: React.FC<LogoProps> = ({ onTripleClick, onClick, className, eyesDown
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`${className || "w-24 h-24 mb-4"}`}
-        aria-label="High Score Logo"
+        aria-label="Higher Please Logo"
       >
         <defs>
           <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
