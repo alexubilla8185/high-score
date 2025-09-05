@@ -62,7 +62,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
     if (isPro) {
         return (
             <>
-                <div className="w-full max-w-4xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
+                <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
                     <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
                     <h1 className="sr-only">High Score</h1>
                     <div className="w-full max-w-md flex flex-col items-center">
@@ -110,7 +110,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
                 aria-label="Tap to begin"
             >
                 <Logo 
-                    className="w-48 h-48 sm:w-56 sm:h-56" 
+                    className="w-40 h-40 sm:w-56 sm:h-56" 
                     onTripleClick={() => setShowNerdSpecsModal(true)}
                 />
             </div>

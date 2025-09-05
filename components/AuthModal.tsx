@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import Logo from './Logo';
@@ -28,9 +29,48 @@ type AuthView = 'initial' | 'signin' | 'signup';
 const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeTour }) => {
     const [view, setView] = useState<AuthView>('initial');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [authError, setAuthError] = useState('');
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [isInputFocused, setInputFocused] = useState(false);
+
+    // Form state
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [validationErrors, setValidationErrors] = useState({ email: '', password: '', confirmPassword: '' });
+
+    // Reset form state when view changes
+    useEffect(() => {
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setValidationErrors({ email: '', password: '', confirmPassword: '' });
+        setAuthError('');
+        // Fix: Corrected typo from `setIsPasswordVisible` to `setPasswordVisible`.
+        setPasswordVisible(false);
+    }, [view]);
+
+    // Real-time validation for sign-up form
+    useEffect(() => {
+        if (view !== 'signup') return;
+
+        const newErrors = { email: '', password: '', confirmPassword: '' };
+        
+        if (email && !/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = 'Please enter a valid email address.';
+        }
+        
+        if (password && password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters long.';
+        }
+        
+        if (confirmPassword && password !== confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match.';
+        }
+        
+        setValidationErrors(newErrors);
+    }, [email, password, confirmPassword, view]);
+
 
     // Add keyboard support for closing modal
     useEffect(() => {
@@ -46,22 +86,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
     const handleAuthSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setError('');
+        setAuthError('');
         // Simulate an API call
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // For this demo, we'll just simulate a successful sign-in
         // In a real app, you would handle actual authentication logic here
-        const formData = new FormData(e.target as HTMLFormElement);
-        const email = formData.get('email');
         if (email === "fail@test.com") {
-             setError('Invalid credentials. Please try again.');
+             setAuthError('Invalid credentials. Please try again.');
              setIsLoading(false);
         } else {
             onSignInSuccess();
         }
     };
 
+    const isSignUpFormValid = 
+        email &&
+        password &&
+        confirmPassword &&
+        !validationErrors.email &&
+        !validationErrors.password &&
+        !validationErrors.confirmPassword;
+        
     const renderForm = (isSignUp: boolean) => (
         <div className="w-full text-center">
             <button onClick={() => setView('initial')} className="absolute top-3 left-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black" aria-label="Back">
@@ -74,20 +120,27 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
             <p className="text-neutral-500 dark:text-neutral-400 mb-6">to unlock Pro features.</p>
             
             <form onSubmit={handleAuthSubmit} className="space-y-4">
-                 <input
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                    required
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={() => setInputFocused(false)}
-                    className="w-full bg-gray-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#0079FF] focus:bg-white dark:focus:bg-black rounded-lg p-3 text-black dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black transition-colors"
-                />
-                <div className="relative">
+                <div className="text-left">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        onFocus={() => setInputFocused(true)}
+                        onBlur={() => setInputFocused(false)}
+                        className="w-full bg-gray-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#0079FF] focus:bg-white dark:focus:bg-black rounded-lg p-3 text-black dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black transition-colors"
+                    />
+                    {isSignUp && validationErrors.email && <p className="text-pink-600 dark:text-[#FF0060] text-xs mt-1 ml-1">{validationErrors.email}</p>}
+                </div>
+                <div className="relative text-left">
                      <input
                         type={isPasswordVisible ? 'text' : 'password'}
                         name="password"
                         placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                         onFocus={() => setInputFocused(true)}
                         onBlur={() => setInputFocused(false)}
@@ -101,9 +154,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
                     >
                         {isPasswordVisible ? <EyeClosedIcon /> : <EyeOpenIcon />}
                     </button>
+                     {isSignUp && validationErrors.password && <p className="text-pink-600 dark:text-[#FF0060] text-xs mt-1 ml-1">{validationErrors.password}</p>}
                 </div>
-                {error && <p className="text-pink-600 dark:text-[#FF0060] text-sm animate-shake">{error}</p>}
-                <button type="submit" disabled={isLoading} className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2] disabled:opacity-70 disabled:scale-100">
+                {isSignUp && (
+                    <div className="text-left">
+                        <input
+                            type={isPasswordVisible ? 'text' : 'password'}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            onFocus={() => setInputFocused(true)}
+                            onBlur={() => setInputFocused(false)}
+                            className="w-full bg-gray-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#0079FF] focus:bg-white dark:focus:bg-black rounded-lg p-3 pr-10 text-black dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black transition-colors"
+                        />
+                        {validationErrors.confirmPassword && <p className="text-pink-600 dark:text-[#FF0060] text-xs mt-1 ml-1">{validationErrors.confirmPassword}</p>}
+                    </div>
+                )}
+                {authError && <p className="text-pink-600 dark:text-[#FF0060] text-sm animate-shake">{authError}</p>}
+                <button type="submit" disabled={isLoading || (isSignUp && !isSignUpFormValid)} className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2] disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed">
                     {isLoading ? <Spinner /> : (isSignUp ? 'Create & Go Pro' : 'Sign In & Go Pro')}
                 </button>
             </form>
@@ -156,7 +226,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
     
     return (
         <div role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in" onClick={onClose}>
-            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-2 border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-6 sm:p-8 flex flex-col max-h-[90vh] animate-card-fade-in-up" onClick={e => e.stopPropagation()}>
+            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-2 border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-4 sm:p-6 flex flex-col max-h-[90vh] animate-card-fade-in-up" onClick={e => e.stopPropagation()}>
                  <button onClick={onClose} className="absolute top-3 right-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black" aria-label="Close">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>

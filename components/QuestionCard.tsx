@@ -70,7 +70,7 @@ const QuestionCard: React.FC = () => {
   const isTextEntryQuestion = question.type === QuestionType.ShortAnswer || question.type === QuestionType.ImageQuestion;
 
   return (
-    <div className="w-full max-w-2xl p-6 md:p-8 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50">
+    <div className="w-full max-w-2xl p-4 sm:p-6 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50">
       {question.type === QuestionType.ImageQuestion && question.imageUrl && (
         <div className="mb-6 rounded-lg overflow-hidden border-2 border-[#0079FF]/50 shadow-lg">
           <img src={question.imageUrl} alt="AI-generated quiz image" className="w-full h-auto object-cover" />

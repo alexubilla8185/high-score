@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import ThemeToggle from './ThemeToggle';
@@ -102,7 +103,7 @@ const InteractiveDemo: React.FC = () => {
 
     return (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-gray-50/80 dark:bg-black/80 backdrop-blur-md animate-modal-fade-in">
-            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-2 border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh] animate-card-fade-in-up">
+            <div className="relative w-full max-w-md bg-white/80 dark:bg-black/30 backdrop-blur-2xl border-2 border-gray-200 dark:border-neutral-800/50 rounded-2xl shadow-2xl p-4 sm:p-6 flex flex-col max-h-[90vh] animate-card-fade-in-up">
                 <button onClick={handleClose} className="absolute top-3 right-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black" aria-label="Close Tour">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
