@@ -123,9 +123,9 @@ const ResultsScreen: React.FC = () => {
           </div>
       )}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2 animate-content-fade-in" style={{ animationDelay: '100ms' }}>Quiz Complete!</h2>
-        <p className={`text-4xl sm:text-5xl font-bold ${color} animate-content-fade-in`} style={{ animationDelay: '250ms' }}>{title}</p>
-        <p className="text-2xl text-neutral-600 dark:text-neutral-300 mt-2 animate-content-fade-in" style={{ animationDelay: '400ms' }}>{level}</p>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 animate-content-fade-in" style={{ animationDelay: '100ms' }}>Quiz Complete!</h2>
+        <p className={`text-3xl sm:text-4xl lg:text-5xl font-bold ${color} animate-content-fade-in`} style={{ animationDelay: '250ms' }}>{title}</p>
+        <p className="text-xl sm:text-2xl text-neutral-600 dark:text-neutral-300 mt-2 animate-content-fade-in" style={{ animationDelay: '400ms' }}>{level}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 text-center mb-8">

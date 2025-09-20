@@ -66,7 +66,7 @@ const getQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promi
       break;
   }
 
-  const systemInstruction = `${personalityInstruction}\nYour goal is to generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. ${vibeInstruction} ${questionMixInstruction} Ensure the questions are highly creative and varied. Every question must have an explanation that matches your personality. Return the questions in the specified JSON schema format.`;
+  const systemInstruction = `${personalityInstruction}\nYour goal is to generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. IMPORTANT: Keep all question text concise, catchy, and under 20 words. The goal is a fun, quick-fire stoner quiz, not a reading test. ${vibeInstruction} ${questionMixInstruction} Ensure the questions are highly creative and varied. Every question must have an explanation that matches your personality. Return the questions in the specified JSON schema format.`;
   const prompt = `Generate the 10 quiz questions now.`;
 
   const response = await getAiClient().models.generateContent({

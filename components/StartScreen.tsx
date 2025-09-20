@@ -71,7 +71,7 @@ const StartScreen: React.FC = () => {
             <Logo />
             <h1 className="sr-only">Higher Please</h1>
             <div className="w-full max-w-lg flex flex-col items-center">
-                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Spirit Guide</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Spirit Guide</h2>
                 <div className="w-full space-y-4">
                 {vibes.map((v, index) => (
                     <button

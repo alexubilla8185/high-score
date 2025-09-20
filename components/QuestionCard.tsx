@@ -88,7 +88,7 @@ const QuestionCard: React.FC = () => {
           <img src={question.imageUrl} alt="AI-generated quiz image" className="w-full h-auto object-cover" />
         </div>
       )}
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 leading-tight">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 leading-tight">
         {question.question}
       </h2>
       <form onSubmit={handleSubmit}>
