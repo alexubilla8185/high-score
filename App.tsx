@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -22,6 +23,7 @@ import HowItWorksModal from './components/HowItWorksModal';
 import HowItWorksButton from './components/HowItWorksButton';
 import LandingPage from './components/LandingPage';
 import AuthModal from './components/AuthModal';
+import { useToast } from './context/ToastContext';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -35,6 +37,7 @@ const App: React.FC = () => {
     isProcessingAnswer,
     isDemoMode
   } = state;
+  const { addToast } = useToast();
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem('isAuthenticated') === 'true');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -45,6 +48,23 @@ const App: React.FC = () => {
   useEffect(() => {
     sessionStorage.setItem('isAuthenticated', isAuthenticated.toString());
   }, [isAuthenticated]);
+
+  // Timed toast notification effect
+  useEffect(() => {
+    let timer: number | undefined;
+    // Condition to show toast: when user is in the main app (not on the landing page)
+    if (isAuthenticated || gameState !== GameState.Idle) {
+      timer = window.setTimeout(() => {
+        addToast("Psst... check out who made this cosmic journey possible!", 'info');
+      }, 10000); // 10 seconds
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [isAuthenticated, gameState, addToast]);
 
 
   const handleLogoClick = () => {
@@ -133,7 +153,7 @@ const App: React.FC = () => {
         { (isAuthenticated || gameState !== GameState.Idle) && (
           <>
             <div className="fixed top-4 left-4 z-50">
-              <Logo onClick={handleLogoClick} className="w-16 h-16" />
+              <Logo onClick={handleLogoClick} onTripleClick={() => setShowNerdSpecs(true)} className="w-16 h-16" />
             </div>
             <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
               <HowItWorksButton onClick={() => setShowHowItWorks(true)} isActive={showHowItWorks} />
@@ -150,7 +170,7 @@ const App: React.FC = () => {
             <Spinner />
           </div>
         )}
-        <TekguyzBadge theme={state.theme} onIconClick={() => setShowNerdSpecs(true)} />
+        <TekguyzBadge theme={state.theme} />
 
         {showNerdSpecs && <NerdSpecsModal onClose={() => setShowNerdSpecs(false)} />}
         <SettingsPanel 

@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 
 const LogomarkIcon: React.FC<{ className?: string }> = ({ className }) => {
@@ -21,10 +22,9 @@ const LogomarkIcon: React.FC<{ className?: string }> = ({ className }) => {
 
 interface TekguyzBadgeProps {
   theme: 'dark' | 'light';
-  onIconClick: () => void;
 }
 
-const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark', onIconClick }) => {
+const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark' }) => {
   const themeClasses = {
     dark: 'bg-black text-gray-400',
     light: 'bg-white text-gray-500'
@@ -39,13 +39,11 @@ const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark', onIconClick
     <div
       className={`fixed bottom-4 right-4 flex items-center px-3 py-1.5 rounded-lg shadow-lg transition-colors duration-300 text-xs font-semibold z-50 ${themeClasses[theme]}`}
     >
-      <button
-        onClick={onIconClick}
-        aria-label="Show app specifications"
-        className={`p-1 -ml-1 mr-1.5 rounded-full transition-colors duration-300 ${hoverClasses[theme]} focus:outline-none focus-visible:ring-2 focus-visible:ring-current`}
+      <div
+        className="p-1 -ml-1 mr-1.5"
       >
         <LogomarkIcon className="w-4 h-4" />
-      </button>
+      </div>
       <a
         href="https://tekguyz.com?ref=made-by-tekguyz"
         target="_blank"
