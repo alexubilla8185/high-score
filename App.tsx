@@ -21,6 +21,7 @@ import HowItWorksButton from './components/HowItWorksButton';
 import LandingPage from './components/LandingPage';
 import { useToast } from './context/ToastContext';
 import { useAuth } from './context/AuthContext';
+import { DottedSurface } from './components/DottedSurface';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -156,6 +157,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-start sm:justify-center p-4 font-sans selection:bg-[#0079FF] selection:text-white">
+        <DottedSurface />
         <ToastContainer />
         {/* Show header icons if not on the unauthenticated, idle landing page */}
         { (isAuthenticated || gameState !== GameState.Idle) && (

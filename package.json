@@ -13,7 +13,8 @@
     "@google/genai": "^1.11.0",
     "react": "^19.1.1",
     "@netlify/functions": "^4.2.5",
-    "@auth0/auth0-react": "^2.2.4"
+    "@auth0/auth0-react": "^2.2.4",
+    "three": "^0.166.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
