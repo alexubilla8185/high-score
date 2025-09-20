@@ -177,6 +177,139 @@
         white-space: nowrap;
         border-width: 0;
       }
+      
+      /* Custom Styles for Netlify Identity Widget */
+      [data-netlify-identity-widget] {
+        --primary-color: #00DFA2;
+        --primary-accent-color: #0079FF;
+        --modal-background-color: #111111;
+        --text-color: #d4d4d4;
+        --text-color-light: #a3a3a3;
+        --border-color: #404040;
+        --button-text-color: #000;
+        --input-background-color: #262626;
+        --error-color: #FF0060;
+      }
+      
+      div[data-netlify-identity-widget] {
+        backdrop-filter: blur(8px);
+      }
+
+      .modal-container {
+        border-radius: 1.5rem !important;
+        background: var(--modal-background-color) !important;
+        border: 2px solid var(--border-color) !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+        max-width: 400px !important;
+        animation: card-fade-in-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+        opacity: 0;
+      }
+      
+      .modal-header {
+        border-bottom: 1px solid var(--border-color) !important;
+        padding: 1.5rem !important;
+      }
+
+      .modal-title {
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+      }
+
+      .modal-close {
+        transition: transform 0.2s ease !important;
+      }
+      .modal-close:hover {
+        transform: scale(1.2) rotate(90deg) !important;
+      }
+      .modal-close-icon {
+        stroke: var(--text-color-light) !important;
+      }
+      .modal-close:hover .modal-close-icon {
+        stroke: white !important;
+      }
+
+      .modal-body {
+        padding: 1.5rem !important;
+      }
+      
+      .form-control, .form-control:focus {
+        background-color: var(--input-background-color) !important;
+        border: 2px solid var(--border-color) !important;
+        border-radius: 0.75rem !important;
+        color: white !important;
+        padding: 0.75rem 1rem !important;
+        box-shadow: none !important;
+        transition: border-color 0.2s ease !important;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-accent-color) !important;
+      }
+      
+      label {
+        color: var(--text-color-light) !important;
+        font-weight: 500 !important;
+        margin-bottom: 0.5rem !important;
+      }
+
+      .btn.btn-primary {
+        background: linear-gradient(to right, var(--primary-accent-color), var(--primary-color)) !important;
+        color: var(--button-text-color) !important;
+        font-weight: 700 !important;
+        border: none !important;
+        border-radius: 9999px !important;
+        padding: 0.75rem 1.5rem !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12) !important;
+      }
+      .btn.btn-primary:hover {
+        transform: scale(1.05) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 223, 162, 0.2), 0 4px 6px -2px rgba(0, 223, 162, 0.1) !important;
+      }
+
+      .provider-buttons {
+        border-top: 1px solid var(--border-color) !important;
+        margin-top: 1.5rem !important;
+        padding-top: 1.5rem !important;
+      }
+
+      .provider-btn {
+        border-radius: 9999px !important;
+        background-color: var(--input-background-color) !important;
+        border: 2px solid var(--border-color) !important;
+        color: white !important;
+        transition: all 0.2s ease !important;
+      }
+      .provider-btn:hover {
+        border-color: var(--primary-color) !important;
+        transform: scale(1.05) !important;
+      }
+      
+      .modal-body p {
+        color: var(--text-color-light) !important;
+      }
+
+      .modal-body p button {
+        color: var(--primary-color) !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .modal-body p button:hover {
+        text-decoration: underline !important;
+      }
+      
+      .error-message {
+        color: var(--error-color) !important;
+        background-color: rgba(255, 0, 96, 0.1) !important;
+        border: 1px solid rgba(255, 0, 96, 0.3) !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem !important;
+        margin-top: 1rem !important;
+      }
     </style>
   <script type="importmap">
 {
