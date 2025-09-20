@@ -48,14 +48,25 @@ const getPersonalityInstruction = (personality: AIPersonality): string => {
 const getQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promise<Question[]> => {
   const personalityInstruction = getPersonalityInstruction(aiPersonality);
   let vibeInstruction = "";
+  let questionMixInstruction = "";
+
   switch (vibe) {
-    case Vibe.Buzzed: vibeInstruction = "The user has chosen the 'Feeling Buzzed' level. The questions should be lighthearted, silly, and focus on simple, funny observations. They should be relatively easy but surprising. Think about goofy shower thoughts."; break;
-    case Vibe.Toasted: vibeInstruction = "The user has chosen the 'Perfectly Toasted' level. This is the classic experience. Generate a balanced mix of creative riddles, bizarre multiple-choice questions, and surreal image-based questions. The tone should be playful, surreal, and humorous."; break;
-    case Vibe.Voyager: vibeInstruction = "The user has chosen the 'Cosmic Voyager' level. The questions should be deeply philosophical, surreal, and abstract, including reality-bending image prompts. Make them very challenging and weird, designed to make users question reality."; break;
+    case Vibe.Buzzed:
+      vibeInstruction = "The user has chosen the 'Feeling Buzzed' level. The questions should be lighthearted, silly, and focus on simple, funny observations. They should be relatively easy but surprising. Think about goofy shower thoughts.";
+      questionMixInstruction = "The question mix should favor simplicity: 7 MULTIPLE_CHOICE questions and 3 SHORT_ANSWER questions. Do not generate any IMAGE_QUESTION types for this vibe.";
+      break;
+    case Vibe.Toasted:
+      vibeInstruction = "The user has chosen the 'Perfectly Toasted' level. This is the classic experience. Generate a balanced mix of creative riddles, bizarre multiple-choice questions, and surreal image-based questions. The tone should be playful, surreal, and humorous.";
+      questionMixInstruction = "The question mix should be balanced: 5 MULTIPLE_CHOICE, 3 SHORT_ANSWER, and 2 IMAGE_QUESTION types.";
+      break;
+    case Vibe.Voyager:
+      vibeInstruction = "The user has chosen the 'Cosmic Voyager' level. The questions should be deeply philosophical, surreal, and abstract, including reality-bending image prompts. Make them very challenging and weird, designed to make users question reality.";
+      questionMixInstruction = "The question mix should be abstract and challenging: 3 MULTIPLE_CHOICE, 4 SHORT_ANSWER, and 3 IMAGE_QUESTION types.";
+      break;
   }
 
-  const systemInstruction = `${personalityInstruction}\nYour goal is to generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. Ensure the questions are highly creative and varied. The questions should be a mix of SHORT_ANSWER, MULTIPLE_CHOICE, and 1 to 3 IMAGE_QUESTION types. Every question must have an explanation that matches your personality. Return the questions in the specified JSON schema format.`;
-  const prompt = `Generate the 10 quiz questions now based on this user's chosen vibe: ${vibe}.`;
+  const systemInstruction = `${personalityInstruction}\nYour goal is to generate a list of 10 funny, strange, and challenging quiz questions to determine a person's level of 'highness'. ${vibeInstruction} ${questionMixInstruction} Ensure the questions are highly creative and varied. Every question must have an explanation that matches your personality. Return the questions in the specified JSON schema format.`;
+  const prompt = `Generate the 10 quiz questions now.`;
 
   const response = await getAiClient().models.generateContent({
     model: "gemini-2.5-flash",
