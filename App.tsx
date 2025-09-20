@@ -1,5 +1,6 @@
 
 
+
 import React, { useState } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -20,6 +21,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import ToastContainer from './components/ToastContainer';
 import TekguyzBadge from './components/TekguyzBadge';
 import NerdSpecsModal from './components/NerdSpecsModal';
+import ErrorDisplay from './components/ErrorDisplay';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -106,15 +108,7 @@ const App: React.FC = () => {
         return <InteractiveDemo />;
       
       case GameState.Error:
-        return <div className="text-center animate-card-fade-in-up">
-                <p className="text-xl text-pink-600 dark:text-[#FF0060]">{error}</p>
-                <button
-                  onClick={() => window.location.reload()} // Simple reload to restart fully
-                  className="mt-6 bg-[#0079FF] hover:bg-[#005cbf] text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
-                >
-                  Try Again
-                </button>
-              </div>;
+        return <ErrorDisplay error={error || 'An unknown error occurred.'} />;
       
       case GameState.Idle:
       default:
