@@ -129,9 +129,9 @@ const ResultsScreen: React.FC = () => {
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 text-center mb-8">
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '600ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{displayedScore}%</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '750ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-2xl sm:text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '900ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Total Time</p><p className="text-2xl sm:text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in transition-all duration-300 hover:scale-105 hover:shadow-xl dark:hover:shadow-[#00DFA2]/10" style={{ animationDelay: '600ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{displayedScore}%</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in transition-all duration-300 hover:scale-105 hover:shadow-xl dark:hover:shadow-[#00DFA2]/10" style={{ animationDelay: '750ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-2xl sm:text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in transition-all duration-300 hover:scale-105 hover:shadow-xl dark:hover:shadow-[#00DFA2]/10" style={{ animationDelay: '900ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Total Time</p><p className="text-2xl sm:text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
       </div>
       
       <div className="bg-gray-100 dark:bg-neutral-900/50 p-6 rounded-lg mb-8 text-center animate-content-fade-in" style={{ animationDelay: '1100ms' }}><h3 className="text-xl font-semibold text-teal-600 dark:text-[#00DFA2] mb-2">Cosmic Advice</h3><p className="text-neutral-600 dark:text-neutral-300">{tip}</p></div>
@@ -157,7 +157,7 @@ const ResultsScreen: React.FC = () => {
               }
 
               return (
-                <div key={i} className="bg-gray-100/80 dark:bg-neutral-900/50 p-4 rounded-lg border-l-4" style={{ borderColor }}>
+                <div key={i} className="bg-gray-100/80 dark:bg-neutral-900/50 p-4 rounded-lg border-l-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style={{ borderColor }}>
                     <div className="flex items-start gap-4">
                         {q.type === QuestionType.ImageQuestion && q.imageUrl && <img src={q.imageUrl} alt="Quiz image thumbnail" className="w-16 h-16 rounded-md object-cover flex-shrink-0"/>}
                         <div className="flex-grow">

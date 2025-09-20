@@ -107,17 +107,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo }) => 
       <section className="w-full max-w-5xl py-20 border-t border-gray-200 dark:border-neutral-800/50">
         <h2 className="text-3xl font-bold text-center mb-12 text-teal-600 dark:text-[#00DFA2]">A Quiz Unlike Any Other</h2>
         <div className="grid md:grid-cols-3 gap-8 text-center">
-          <div className="flex flex-col items-center animate-content-fade-in" style={{ animationDelay: '200ms' }}>
+          <div className="flex flex-col items-center animate-content-fade-in p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:bg-white/50 dark:hover:bg-neutral-900/50" style={{ animationDelay: '200ms' }}>
             <FeatureIcon>🧠</FeatureIcon>
             <h3 className="text-xl font-bold mt-4 mb-2">Infinite Questions</h3>
             <p className="text-neutral-600 dark:text-neutral-300">Powered by Google's Gemini AI, every quiz is completely unique. Never see the same question twice.</p>
           </div>
-          <div className="flex flex-col items-center animate-content-fade-in" style={{ animationDelay: '400ms' }}>
+          <div className="flex flex-col items-center animate-content-fade-in p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:bg-white/50 dark:hover:bg-neutral-900/50" style={{ animationDelay: '400ms' }}>
             <FeatureIcon>🎶</FeatureIcon>
             <h3 className="text-xl font-bold mt-4 mb-2">Themed Spirit Guides</h3>
             <p className="text-neutral-600 dark:text-neutral-300">Choose your vibe with guides like Bob Marley and Snoop Dogg for a specially tailored quiz experience.</p>
           </div>
-          <div className="flex flex-col items-center animate-content-fade-in" style={{ animationDelay: '600ms' }}>
+          <div className="flex flex-col items-center animate-content-fade-in p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:bg-white/50 dark:hover:bg-neutral-900/50" style={{ animationDelay: '600ms' }}>
             <FeatureIcon>🤖</FeatureIcon>
             <h3 className="text-xl font-bold mt-4 mb-2">Witty AI Banter</h3>
             <p className="text-neutral-600 dark:text-neutral-300">Our AI quizmaster reacts to your answers with clever, custom-generated feedback. It's a conversation.</p>
@@ -133,7 +133,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo }) => 
           {comingSoonGames.map((game, index) => (
             <div
               key={index}
-              className="w-full p-6 bg-white/30 dark:bg-neutral-900/40 border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-2xl text-center flex flex-col items-center justify-start animate-content-fade-in opacity-70"
+              className="w-full p-6 bg-white/30 dark:bg-neutral-900/40 border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-2xl text-center flex flex-col items-center justify-start animate-content-fade-in opacity-70 transition-all duration-300 hover:opacity-100 hover:scale-105 hover:border-solid hover:border-[#00DFA2]"
               style={{ animationDelay: `${200 + index * 200}ms` }}
               aria-label={`${game.title} - Coming Soon`}
             >
