@@ -20,7 +20,13 @@ const AppInitializer: React.FC = () => {
   useEffect(() => {
     const fetchAuthConfig = async () => {
       try {
-        const response = await fetch('/.netlify/functions/auth-config');
+        const response = await fetch('/.netlify/functions/gemini-proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: 'getAuthConfig' }),
+        });
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || `Failed to load authentication configuration. Status: ${response.status}`);
