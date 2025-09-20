@@ -2,6 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { QuestionType, Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
+import { useToast } from '../context/ToastContext';
 
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-teal-600 dark:text-[#00DFA2]" viewBox="0 0 20 20" fill="currentColor">
@@ -26,6 +27,7 @@ const ANSWER_TIMED_OUT = '__TIMES_UP__';
 
 const ResultsScreen: React.FC = () => {
   const { state, dispatch } = useGame();
+  const { addToast } = useToast();
   const { questions, userAnswers, time, vibe, isDemoMode } = state;
 
   const { score, correctAnswers } = useMemo(() => {
@@ -108,6 +110,10 @@ const ResultsScreen: React.FC = () => {
     }
   };
 
+  const handleComingSoon = () => {
+    addToast("This feature is still rollin' up. Check back soon!", 'info');
+  };
+
   return (
     <div className="w-full max-w-3xl p-4 sm:p-6 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 animate-card-fade-in-up">
       {isDemoMode && (
@@ -173,6 +179,12 @@ const ResultsScreen: React.FC = () => {
             <button onClick={handleRestart} className="w-full bg-[#0079FF] hover:bg-[#005cbf] text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">Play Again</button>
             <button onClick={handleShare} className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">Share Score</button>
         </div>
+         <button 
+            onClick={handleComingSoon} 
+            className="w-full bg-transparent border-2 border-dashed border-neutral-400 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 hover:border-solid hover:border-[#0079FF] hover:text-gray-800 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+        >
+            Achievements & Badges (Coming Soon)
+        </button>
       </div>
     </div>
   );

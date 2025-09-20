@@ -3,6 +3,7 @@
 import React from 'react';
 import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
+import { useToast } from '../context/ToastContext';
 import Logo from './Logo';
 
 const BobMarleyIcon = () => (
@@ -26,6 +27,16 @@ const SnoopDoggIcon = () => (
         <path d="M10 13.5H14" stroke="currentColor" strokeWidth="1.5"/>
         <path d="M6 12L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
         <path d="M18 12L17 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+);
+
+const DiceIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 sm:w-10 sm:h-10 text-neutral-500 dark:text-neutral-400 group-hover:text-[#0079FF] transition-colors">
+        <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5"/>
+        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+        <circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/>
+        <circle cx="8.5" cy="15.5" r="1.5" fill="currentColor"/>
+        <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"/>
     </svg>
 );
 
@@ -61,9 +72,14 @@ const vibes = [
 
 const StartScreen: React.FC = () => {
     const { dispatch } = useGame();
+    const { addToast } = useToast();
     
     const handleStartGame = (vibe: Vibe, personality: AIPersonality) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality: personality } });
+    };
+
+    const handleComingSoon = () => {
+        addToast("Patience, young padawan. These special rounds are still brewin'.", 'info');
     };
     
     return (
@@ -87,6 +103,24 @@ const StartScreen: React.FC = () => {
                         </div>
                     </button>
                 ))}
+                </div>
+
+                <div className="w-full mt-6 border-t-2 border-dashed border-gray-200 dark:border-neutral-800 pt-6">
+                    <button
+                        onClick={handleComingSoon}
+                        className="w-full p-4 sm:p-5 bg-transparent border-2 border-dashed border-neutral-400 dark:border-neutral-600 rounded-xl text-left flex items-center space-x-4 sm:space-x-5 hover:border-solid hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]"
+                        aria-label="Learn about upcoming mini-games"
+                    >
+                        <div className="flex-shrink-0"><DiceIcon /></div>
+                        <div>
+                            <h3 className="text-lg font-bold text-neutral-500 dark:text-neutral-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                                Mini-Games & Special Rounds
+                            </h3>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                                (Coming Soon) Guess the strain, finish the lyric, and more!
+                            </p>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>

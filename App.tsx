@@ -18,6 +18,8 @@ import NerdSpecsModal from './components/NerdSpecsModal';
 import ErrorDisplay from './components/ErrorDisplay';
 import SettingsButton from './components/SettingsButton';
 import SettingsPanel from './components/SettingsPanel';
+import HowItWorksModal from './components/HowItWorksModal';
+import HowItWorksButton from './components/HowItWorksButton';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -35,6 +37,7 @@ const App: React.FC = () => {
   const [hasSeenWelcome, setHasSeenWelcome] = useState(() => sessionStorage.getItem('hasSeenWelcome') === 'true');
   const [showNerdSpecs, setShowNerdSpecs] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
@@ -117,7 +120,8 @@ const App: React.FC = () => {
             <Logo onClick={handleLogoClick} className="w-16 h-16" />
           </div>
         )}
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+          <HowItWorksButton onClick={() => setShowHowItWorks(true)} />
           <SettingsButton onClick={() => setIsSettingsOpen(true)} />
         </div>
         <main className="w-full max-w-3xl flex flex-col items-center justify-center flex-grow">
@@ -132,6 +136,7 @@ const App: React.FC = () => {
         <TekguyzBadge theme={state.theme} onIconClick={() => setShowNerdSpecs(true)} />
         {showNerdSpecs && <NerdSpecsModal onClose={() => setShowNerdSpecs(false)} />}
         <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+        {showHowItWorks && <HowItWorksModal onClose={() => setShowHowItWorks(false)} />}
     </div>
   );
 };

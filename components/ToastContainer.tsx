@@ -16,7 +16,12 @@ const Toast: React.FC<{ message: string; type: string; onDismiss: () => void }> 
     return () => clearTimeout(timer);
   }, [onDismiss]);
 
-  const bgColor = type === 'error' ? 'bg-pink-600 dark:bg-[#FF0060]' : 'bg-teal-600 dark:bg-[#00DFA2]';
+  const bgColor =
+    type === 'error'
+      ? 'bg-pink-600 dark:bg-[#FF0060]'
+      : type === 'info'
+      ? 'bg-blue-600 dark:bg-[#0079FF]'
+      : 'bg-teal-600 dark:bg-[#00DFA2]';
 
   return (
     <div
