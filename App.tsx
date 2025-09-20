@@ -121,8 +121,8 @@ const App: React.FC = () => {
           </div>
         )}
         <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-          <HowItWorksButton onClick={() => setShowHowItWorks(true)} />
-          <SettingsButton onClick={() => setIsSettingsOpen(true)} />
+          <HowItWorksButton onClick={() => setShowHowItWorks(true)} isActive={showHowItWorks} />
+          <SettingsButton onClick={() => setIsSettingsOpen(true)} isActive={isSettingsOpen} />
         </div>
         <main className="w-full max-w-3xl flex flex-col items-center justify-center flex-grow">
           {renderContent()}

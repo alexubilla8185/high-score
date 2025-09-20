@@ -8,14 +8,22 @@ const HowItWorksIcon = () => (
 
 interface HowItWorksButtonProps {
     onClick: () => void;
+    isActive: boolean;
 }
 
-const HowItWorksButton: React.FC<HowItWorksButtonProps> = ({ onClick }) => {
+const HowItWorksButton: React.FC<HowItWorksButtonProps> = ({ onClick, isActive }) => {
+    const baseClasses = "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]";
+    
+    const inactiveClasses = "bg-gray-500/10 dark:bg-white/10 text-blue-600 dark:text-[#0079FF] hover:scale-110";
+    
+    const activeClasses = "bg-gradient-to-br from-blue-500 to-cyan-400 text-white scale-110";
+
     return (
         <button
             onClick={onClick}
             aria-label="How it works"
-            className="w-12 h-12 bg-gray-200 dark:bg-neutral-800/80 rounded-full flex items-center justify-center text-blue-600 dark:text-[#0079FF] shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
+            aria-pressed={isActive}
+            className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
         >
             <HowItWorksIcon />
         </button>

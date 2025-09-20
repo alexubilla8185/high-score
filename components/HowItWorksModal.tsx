@@ -13,7 +13,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
         <div className="space-y-4 text-neutral-600 dark:text-neutral-300">
           <p>Welcome to Higher Please! Here’s the simple version:</p>
           <ul className="list-disc list-inside space-y-2 pl-2">
-            <li><strong>Press 'How High':</strong> You'll choose a "vibe" for your quiz—from lighthearted to mind-bending.</li>
+            <li><strong>Choose Your Guide:</strong> You'll pick a "spirit guide" (like Bob Marley or Snoop Dogg) to set the vibe for your quiz.</li>
             <li><strong>Answer Questions:</strong> You'll get 10 questions. They can be multiple choice, short answer, or even ask you about a trippy AI-generated image.</li>
             <li><strong>Get Witty Feedback:</strong> Sometimes, our AI Quizmaster will have a funny reaction to your short answers. Don't be alarmed, it's friendly. Mostly.</li>
             <li><strong>See Your Score:</strong> At the end, you'll get a score, a title, and some cosmic advice based on how you did.</li>
@@ -30,11 +30,14 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
           <li><strong>AI Integration:</strong> We use the `@google/genai` SDK to communicate with the `gemini-2.5-flash` model for generating questions and `imagen-4.0-generate-001` for images.</li>
           <li><strong>Structured Output:</strong> We send a detailed prompt and a `responseSchema` to the Gemini API, forcing it to return a clean JSON array of questions, which we then parse and display. This ensures reliability.</li>
           <li><strong>Resiliency:</strong> Image generation includes a retry mechanism, and if it still fails, it gracefully falls back to a text-based question to ensure the quiz is never broken.</li>
+          <li><strong>UI/UX Philosophy:</strong> A focus on micro-interactions and satisfying feedback, like the animated header icons, to create a polished and engaging user experience.</li>
         </ul>
         <div className="pt-4">
           <h4 className="font-semibold text-lg text-teal-600 dark:text-[#00DFA2] mb-2">Simple Changelog</h4>
           <ul className="list-disc list-inside text-sm space-y-1 pl-2">
-            <li>v2.5: Implemented the "True Black" dark mode for higher contrast. Revamped the main CTA with a unique, animated gradient. Unified component styling for a more cohesive look.</li>
+            <li>v2.6.1: Replaced static header icons with dynamic, animated versions.</li>
+            <li>v2.6: Added themed "Spirit Guide" levels and animated results screen.</li>
+            <li>v2.5: Implemented "True Black" dark mode and revamped the main CTA button.</li>
             <li>v2.0: Major architectural refactor to use a centralized state reducer (useReducer & Context). Added focus-visible states for accessibility, `useMemo` for performance, and retry logic for image generation.</li>
             <li>v1.6: Replaced "How It Works" text link with a floating icon button.</li>
           </ul>

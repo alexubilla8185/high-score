@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.1] - 2024-08-02
+
 ### Added
 - A new `CHANGELOG.md` file to track project history.
 - A comprehensive `README.md` file.
-- A "How It Works" button in the main header to provide users with information about the app's functionality and tech stack.
+- A "How It Works" button and modal to provide users with app information.
+
+### Changed
+- Replaced static header icons with dynamic, animated versions that change color and scale when active, improving visual feedback.
+- Made the background of header icons translucent for a cleaner look.
 
 ## [2.6.0] - 2024-08-01
 

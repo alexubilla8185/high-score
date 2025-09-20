@@ -8,7 +8,7 @@ Welcome to **Higher Please**, a modern web app that uses the power of Google's G
 -   **Themed "Vibes"**: Choose your spirit guide—Bob Marley, Willie Nelson, or Snoop Dogg—for a quiz tailored to a specific mood and set of topics.
 -   **Multiple Question Types**: Face a mix of multiple-choice, short-answer, and trippy AI-generated image questions.
 -   **Witty AI Feedback**: Get funny, context-aware reactions to your answers, generated on the fly.
--   **Slick, Responsive UI**: Enjoy a clean, modern interface with a "true black" dark mode, smooth animations, and sound/haptic feedback.
+-   **Polished & Interactive UI**: A clean, modern interface with dynamic animations, including animated header icons, a "true black" dark mode, and immersive sound/haptic feedback.
 -   **Scoring & Cosmic Advice**: Finish the quiz to see your score, your official "highness" level, and some sage advice.
 
 ## 🚀 Tech Stack
