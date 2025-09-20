@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 
 interface FeedbackOverlayProps {
@@ -22,7 +21,19 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ feedback }) => {
     >
       <div className={`transition-all duration-500 ease-out transform ${show ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
         <p className="text-3xl md:text-5xl font-bold text-center text-white max-w-4xl bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text drop-shadow-lg">
-          "{feedback}"
+          {feedback.split(' ').map((word, index) => (
+            <span
+              key={index}
+              className="inline-block mr-3" // Using margin for space between words
+              style={{
+                animation: `word-fade-in-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+                animationDelay: `${index * 100}ms`,
+                opacity: 0, // Start hidden, animation will make it visible
+              }}
+            >
+              "{word}"
+            </span>
+          ))}
         </p>
       </div>
     </div>

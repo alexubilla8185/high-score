@@ -225,7 +225,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         
         let feedbackToShow: string | null = null;
         let hapticPattern: HapticPattern | null = null;
-        let delay = 500;
+        let delay;
 
         if(isTimedOut) {
             feedbackToShow = "Time's Up!";
@@ -239,7 +239,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
             if (state.isDemoMode && isTextEntry && currentQuestion.demoFeedback?.length) {
                 const feedbackOptions = currentQuestion.demoFeedback;
                 feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
-            } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.4) {
+            } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.6) { // 60% chance of getting feedback
                 try {
                     const token = user?.token?.access_token;
                     feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality, token);
@@ -254,8 +254,12 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         }
 
         if (feedbackToShow) {
-            dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
-            delay = 4000;
+          dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
+          // Random delay between 3 and 5 seconds to feel more natural
+          delay = 3000 + Math.random() * 2000;
+        } else {
+          // If no feedback, shorter random delay between 0.5 and 1 second
+          delay = 500 + Math.random() * 500;
         }
 
         setTimeout(() => {
