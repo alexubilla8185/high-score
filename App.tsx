@@ -174,8 +174,11 @@ const App: React.FC = () => {
         </main>
         {feedback && <FeedbackOverlay feedback={feedback} />}
         {isProcessingAnswer && !feedback && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-200/50 dark:bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-gray-200/50 dark:bg-black/50 backdrop-blur-sm text-center p-4">
             <Spinner />
+            <p className="mt-4 text-lg font-semibold text-teal-600 dark:text-[#00DFA2] animate-pulse-subtle">
+              Our AI is pondering your cosmic answer...
+            </p>
           </div>
         )}
         <TekguyzBadge theme={state.theme} />

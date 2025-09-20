@@ -93,8 +93,9 @@ const getQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promi
           console.error(`Attempt ${attempt} failed for image prompt: "${q.imagePrompt}"`, imageError);
         }
       }
+      // Fallback: If image generation fails, convert it to a short answer question.
+      // The original question text will be used as is, without the image prompt prepended.
       q.type = QuestionType.ShortAnswer;
-      q.question = `Imagine: "${q.imagePrompt}". Now, answer: ${q.question}`;
       q.imageUrl = undefined;
     }
     return q;

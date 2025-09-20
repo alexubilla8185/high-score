@@ -13,6 +13,9 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ feedback }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Remove surrounding quotes if the AI includes them.
+  const cleanedFeedback = feedback.trim().replace(/^["']|["']$/g, '');
+
   return (
     <div
       role="dialog"
@@ -21,7 +24,7 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ feedback }) => {
     >
       <div className={`transition-all duration-500 ease-out transform ${show ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
         <p className="text-3xl md:text-5xl font-bold text-center text-white max-w-4xl bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text drop-shadow-lg">
-          {feedback.split(' ').map((word, index) => (
+          {cleanedFeedback.split(' ').map((word, index) => (
             <span
               key={index}
               className="inline-block mr-3" // Using margin for space between words
@@ -31,7 +34,7 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ feedback }) => {
                 opacity: 0, // Start hidden, animation will make it visible
               }}
             >
-              "{word}"
+              {word}
             </span>
           ))}
         </p>

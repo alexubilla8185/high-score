@@ -1,41 +1,90 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { GameProvider } from './context/GameContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { Auth0Provider } from '@auth0/auth0-react';
+import Logo from './components/Logo';
 
-// IMPORTANT: These values must be replaced by your Auth0 configuration.
-// It's recommended to use environment variables that are substituted during your build process.
-// The variable names used here (`VITE_...`, `AUTH0_...`) are based on the user's provided screenshot.
-const auth0Domain = process.env.VITE_AUTH0_DOMAIN;
-const auth0ClientId = process.env.VITE_AUTH0_CLIENT_ID;
-const auth0Audience = process.env.AUTH0_AUDIENCE;
-
-if (!auth0Domain || !auth0ClientId || !auth0Audience) {
-  const errorElement = document.getElementById('root');
-  if (errorElement) {
-    errorElement.innerHTML = `
-      <div style="font-family: sans-serif; padding: 2rem; text-align: center; color: #FF0060; background-color: #111; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <h1 style="font-size: 2rem; margin-bottom: 1rem;">Auth0 Configuration Error</h1>
-        <p style="font-size: 1.1rem; max-width: 600px; line-height: 1.6;">
-          Authentication is not configured correctly. Please ensure the following environment variables are set in your deployment environment:
-        </p>
-        <ul style="list-style: none; padding: 0; margin: 1.5rem 0; background-color: #222; border-radius: 8px; padding: 1.5rem; text-align: left;">
-          <li style="margin-bottom: 0.5rem;"><strong>VITE_AUTH0_DOMAIN</strong></li>
-          <li style="margin-bottom: 0.5rem;"><strong>VITE_AUTH0_CLIENT_ID</strong></li>
-          <li><strong>AUTH0_AUDIENCE</strong></li>
-        </ul>
-        <p style="font-size: 0.9rem; color: #888;">These variables are required to initialize the Auth0 SDK.</p>
-      </div>
-    `;
-  }
-  throw new Error(
-    "Auth0 environment variables are not configured. Please set VITE_AUTH0_DOMAIN, VITE_AUTH0_CLIENT_ID, and AUTH0_AUDIENCE."
-  );
+interface AuthConfig {
+  domain: string;
+  clientId: string;
+  audience: string;
 }
 
+const AppInitializer: React.FC = () => {
+  const [config, setConfig] = useState<AuthConfig | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAuthConfig = async () => {
+      try {
+        const response = await fetch('/.netlify/functions/auth-config');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Failed to load authentication configuration. Status: ${response.status}`);
+        }
+        const authConfig: AuthConfig = await response.json();
+        if (!authConfig.domain || !authConfig.clientId || !authConfig.audience) {
+          throw new Error('Incomplete authentication configuration received from server.');
+        }
+        setConfig(authConfig);
+      } catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred during initialization.');
+      }
+    };
+
+    fetchAuthConfig();
+  }, []);
+
+  if (error) {
+    return (
+      <div style={{fontFamily: 'sans-serif', padding: '2rem', textAlign: 'center', color: '#FF0060', backgroundColor: '#111', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+        <h1 style={{fontSize: '2rem', marginBottom: '1rem'}}>Initialization Error</h1>
+        <p style={{fontSize: '1.1rem', maxWidth: '600px', lineHeight: '1.6'}}>
+          Could not initialize the application. Please check the deployment configuration.
+        </p>
+        <p style={{fontFamily: 'monospace', marginTop: '1rem', padding: '1rem', backgroundColor: '#222', borderRadius: '8px', color: '#ffa0a0', maxWidth: '100%', overflowWrap: 'break-word'}}>
+          {error}
+        </p>
+      </div>
+    );
+  }
+
+  if (!config) {
+    return (
+      <div style={{backgroundColor: '#000', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+        <Logo className="w-32 h-32 animate-spin-slow" />
+        <p style={{marginTop: '1rem', fontSize: '1.125rem', color: '#00DFA2', animation: 'pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'}}>
+          Connecting to Cosmic Servers...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <React.StrictMode>
+      <Auth0Provider
+        domain={config.domain}
+        clientId={config.clientId}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+          audience: config.audience,
+        }}
+      >
+        <ToastProvider>
+          <AuthProvider>
+            <GameProvider>
+              <App />
+            </GameProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </Auth0Provider>
+    </React.StrictMode>
+  );
+};
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -43,23 +92,4 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <Auth0Provider
-      domain={auth0Domain}
-      clientId={auth0ClientId}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: auth0Audience,
-      }}
-    >
-      <ToastProvider>
-        <AuthProvider>
-          <GameProvider>
-            <App />
-          </GameProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </Auth0Provider>
-  </React.StrictMode>
-);
+root.render(<AppInitializer />);
