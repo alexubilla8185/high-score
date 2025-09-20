@@ -1,6 +1,7 @@
 
+
 import React, { useState } from 'react';
-import { Vibe, AIPersonality } from '../types';
+import { Vibe } from '../types';
 import { useGame } from '../context/GameContext';
 import NerdSpecsModal from './NerdSpecsModal';
 import Logo from './Logo';
@@ -35,14 +36,9 @@ const vibes = [
   { vibe: Vibe.Voyager, icon: <VoyagerIcon />, title: 'Cosmic Voyager', description: 'Deeply philosophical and reality-bending. For when you want to question everything.' },
 ];
 
-interface StartScreenProps {
-  setAuthModalVisible: (visible: boolean) => void;
-}
-
-
-const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
+const StartScreen: React.FC = () => {
     const { state, dispatch } = useGame();
-    const { isPro, aiPersonality } = state;
+    const { aiPersonality } = state;
     
     const [showNerdSpecsModal, setShowNerdSpecsModal] = useState(false);
     
@@ -50,71 +46,33 @@ const StartScreen: React.FC<StartScreenProps> = ({ setAuthModalVisible }) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
     };
     
-    const handleLogout = () => {
-        dispatch({ type: 'LOGOUT' });
-    };
-
-    const handleSplashTap = () => {
-        setAuthModalVisible(true);
-    };
-
-    // Render the Pro user experience
-    if (isPro) {
-        return (
-            <>
-                <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
-                    <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
-                    <h1 className="sr-only">Higher Please</h1>
-                    <div className="w-full max-w-md flex flex-col items-center">
-                        <AIPersonalitySelector />
-
-                        <h2 className="text-2xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-8">Choose Your Vibe</h2>
-                        <div className="w-full space-y-4">
-                        {vibes.map((v, index) => (
-                            <button
-                            key={v.vibe}
-                            onClick={() => handleStartGame(v.vibe)}
-                            className="w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                            >
-                            <div className="flex-shrink-0">{v.icon}</div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{v.title}</h3>
-                                <p className="text-sm text-neutral-600 dark:text-neutral-300">{v.description}</p>
-                            </div>
-                            </button>
-                        ))}
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="mt-6 text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] rounded"
-                        >
-                        &larr; Log Out
-                        </button>
-                    </div>
-                </div>
-                {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
-            </>
-        );
-    }
-
-    // Render the non-Pro user experience
     return (
         <>
-            <div 
-                className="w-full h-full flex flex-col items-center justify-center text-center p-4 animate-card-fade-in-up cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-4 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black rounded-full" 
-                onClick={handleSplashTap}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => ['Enter', ' '].includes(e.key) && handleSplashTap()}
-                aria-label="Tap to begin"
-            >
-                <Logo 
-                    className="w-40 h-40 sm:w-56 sm:h-56" 
-                    onTripleClick={() => setShowNerdSpecsModal(true)}
-                />
+            <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
+                <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
+                <h1 className="sr-only">Higher Please</h1>
+                <div className="w-full max-w-md flex flex-col items-center">
+                    <AIPersonalitySelector />
+
+                    <h2 className="text-2xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-8">Choose Your Vibe</h2>
+                    <div className="w-full space-y-4">
+                    {vibes.map((v, index) => (
+                        <button
+                        key={v.vibe}
+                        onClick={() => handleStartGame(v.vibe)}
+                        className="w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF]"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                        <div className="flex-shrink-0">{v.icon}</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{v.title}</h3>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-300">{v.description}</p>
+                        </div>
+                        </button>
+                    ))}
+                    </div>
+                </div>
             </div>
-            
             {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
         </>
     );

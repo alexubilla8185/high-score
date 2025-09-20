@@ -11,14 +11,14 @@ const ShareButton: React.FC = () => {
         const shareData = {
             title: 'Higher Please Quiz',
             text: `Challenge your mind with this surreal, AI-powered quiz. Can you get a higher score?`,
-            url: window.location.href,
+            url: window.location.origin,
         };
         try {
             if (navigator.share) {
                 await navigator.share(shareData);
             } else {
                 // Fallback for browsers that don't support Web Share API
-                navigator.clipboard.writeText(window.location.href);
+                navigator.clipboard.writeText(shareData.url);
                 alert('Link copied to clipboard!');
             }
         } catch (error) {

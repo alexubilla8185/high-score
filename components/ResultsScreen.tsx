@@ -55,7 +55,7 @@ const ResultsScreen: React.FC = () => {
     const shareData = {
       title: 'Higher Please Quiz',
       text: `I scored ${score}% on the Higher Please quiz and my official level is "${level}". Think you can do better?`,
-      url: window.location.href,
+      url: window.location.origin,
     };
 
     try {

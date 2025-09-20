@@ -3,9 +3,9 @@ import { useGame } from '../context/GameContext';
 import { AIPersonality } from '../types';
 
 const personalityOptions = [
-    { id: AIPersonality.Witty, label: 'Witty', description: 'Clever and quirky.' },
-    { id: AIPersonality.Sassy, label: 'Sassy (Pro)', description: 'Dry, sarcastic humor.' },
-    { id: AIPersonality.Unfiltered, label: 'Unfiltered (Pro)', description: 'Edgy and roasting.' },
+    { id: AIPersonality.Witty, label: 'Bob Marley', description: 'Chill, philosophical vibes.' },
+    { id: AIPersonality.Sassy, label: 'Willie Nelson', description: 'Outlaw country wisdom.' },
+    { id: AIPersonality.Unfiltered, label: 'Snoop Dogg', description: 'Laid back G-funk flow.' },
 ];
 
 const AIPersonalitySelector: React.FC = () => {
@@ -35,11 +35,10 @@ const AIPersonalitySelector: React.FC = () => {
                     </button>
                 ))}
                 <div
-                    className="absolute top-1 h-10 bg-gradient-to-r from-[#0079FF] to-[#00DFA2] rounded-full shadow-md transition-all duration-300 ease-in-out"
+                    className="absolute top-1 left-1 h-10 bg-gradient-to-r from-[#0079FF] to-[#00DFA2] rounded-full shadow-md transition-transform duration-300 ease-in-out"
                     style={{
                         width: `calc((100% - 8px) / ${personalityOptions.length})`,
-                        left: `${(personalityOptions.findIndex(p => p.id === aiPersonality) / personalityOptions.length) * 100}%`,
-                        marginLeft: '4px',
+                        transform: `translateX(${personalityOptions.findIndex(p => p.id === aiPersonality) * 100}%)`,
                     }}
                 />
             </div>

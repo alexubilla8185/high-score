@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -12,10 +13,10 @@ import FeedbackOverlay from './components/FeedbackOverlay';
 import ThemeToggle from './components/ThemeToggle';
 import SoundToggle from './components/SoundToggle';
 import HapticToggle from './components/HapticToggle';
-import AuthModal from './components/AuthModal';
 import Logo from './components/Logo';
 import InteractiveDemo from './components/InteractiveDemo';
 import ShareButton from './components/ShareButton';
+import WelcomeScreen from './components/WelcomeScreen';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -27,35 +28,35 @@ const App: React.FC = () => {
     time, 
     feedback, 
     isProcessingAnswer,
-    isDemoMode,
-    isPro
+    isDemoMode
   } = state;
 
-  const [isAuthModalVisible, setAuthModalVisible] = useState(false);
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(() => sessionStorage.getItem('hasSeenWelcome') === 'true');
 
   const handlePremiumFeatureToggle = (actionType: 'TOGGLE_HAPTIC' | 'TOGGLE_SOUND' | 'TOGGLE_THEME') => {
-    if (isPro) {
-      dispatch({ type: actionType });
-    } else {
-      setAuthModalVisible(true);
-    }
+    dispatch({ type: actionType });
   };
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
   };
 
-  const handleSignInSuccess = () => {
-    dispatch({ type: 'UPGRADE_TO_PRO' });
-    setAuthModalVisible(false);
+  const handleStartQuiz = () => {
+    sessionStorage.setItem('hasSeenWelcome', 'true');
+    setHasSeenWelcome(true);
   };
-  
-  const handleTakeTour = () => {
-    setAuthModalVisible(false);
+
+  const handleStartTour = () => {
+    sessionStorage.setItem('hasSeenWelcome', 'true');
+    setHasSeenWelcome(true);
     dispatch({ type: 'START_DEMO_TOUR' });
   };
 
   const renderContent = () => {
+    if (!hasSeenWelcome && gameState === GameState.Idle) {
+      return <WelcomeScreen onStartQuiz={handleStartQuiz} onStartTour={handleStartTour} />;
+    }
+    
     switch (gameState) {
       case GameState.Loading:
         return (
@@ -113,7 +114,7 @@ const App: React.FC = () => {
       
       case GameState.Idle:
       default:
-        return <StartScreen setAuthModalVisible={setAuthModalVisible} />;
+        return <StartScreen />;
     }
   };
 
@@ -138,13 +139,6 @@ const App: React.FC = () => {
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-200/50 dark:bg-black/50 backdrop-blur-sm">
             <Spinner />
           </div>
-        )}
-        {isAuthModalVisible && !isPro && (
-          <AuthModal 
-            onClose={() => setAuthModalVisible(false)} 
-            onSignInSuccess={handleSignInSuccess}
-            onTakeTour={handleTakeTour}
-          />
         )}
     </div>
   );
