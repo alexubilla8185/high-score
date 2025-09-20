@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const SettingsIcon = () => (
@@ -17,7 +16,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({ onClick }) => {
         <button
             onClick={onClick}
             aria-label="Open settings panel"
-            className="w-12 h-12 bg-gray-200 dark:bg-neutral-800/80 rounded-full flex items-center justify-center text-gray-800 dark:text-white shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
+            className="w-12 h-12 bg-gray-200 dark:bg-neutral-800/80 rounded-full flex items-center justify-center text-teal-600 dark:text-[#00DFA2] shadow-lg hover:scale-110 transition-all transform duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#0079FF]"
         >
             <SettingsIcon />
         </button>
