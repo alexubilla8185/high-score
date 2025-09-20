@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { useToast } from '../context/ToastContext';
 
 const ShareIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -7,6 +9,8 @@ const ShareIcon = () => (
 );
 
 const ShareButton: React.FC = () => {
+    const { addToast } = useToast();
+
     const handleShare = async () => {
         const shareData = {
             title: 'Higher Please Quiz',
@@ -19,11 +23,11 @@ const ShareButton: React.FC = () => {
             } else {
                 // Fallback for browsers that don't support Web Share API
                 navigator.clipboard.writeText(shareData.url);
-                alert('Link copied to clipboard!');
+                addToast('Link copied to clipboard!');
             }
         } catch (error) {
             console.error('Error sharing:', error);
-            alert('Could not share. Please copy the link manually.');
+            addToast('Could not share link.', 'error');
         }
     };
     

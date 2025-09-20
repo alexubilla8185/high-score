@@ -1,9 +1,8 @@
 
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
-import NerdSpecsModal from './NerdSpecsModal';
 import Logo from './Logo';
 
 const BobMarleyIcon = () => (
@@ -63,39 +62,34 @@ const quizmasters = [
 const StartScreen: React.FC = () => {
     const { dispatch } = useGame();
     
-    const [showNerdSpecsModal, setShowNerdSpecsModal] = useState(false);
-    
     const handleStartGame = (vibe: Vibe, aiPersonality: AIPersonality) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
     };
     
     return (
-        <>
-            <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
-                <Logo onTripleClick={() => setShowNerdSpecsModal(true)} />
-                <h1 className="sr-only">Higher Please</h1>
-                <div className="w-full max-w-lg flex flex-col items-center">
-                    <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-4">Choose Your Quizmaster</h2>
-                    <div className="w-full space-y-4">
-                    {quizmasters.map((qm, index) => (
-                        <button
-                        key={qm.aiPersonality}
-                        onClick={() => handleStartGame(qm.vibe, qm.aiPersonality)}
-                        className={`w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] ${qm.hoverClasses}`}
-                        style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                        <div className="flex-shrink-0">{qm.icon}</div>
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{qm.title} <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">- {qm.subtitle}</span></h3>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-300">{qm.description}</p>
-                        </div>
-                        </button>
-                    ))}
+        <div className="w-full max-w-2xl text-center flex flex-col items-center justify-center animate-card-fade-in-up">
+            <Logo />
+            <h1 className="sr-only">Higher Please</h1>
+            <div className="w-full max-w-lg flex flex-col items-center">
+                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-4">Choose Your Quizmaster</h2>
+                <div className="w-full space-y-4">
+                {quizmasters.map((qm, index) => (
+                    <button
+                    key={qm.aiPersonality}
+                    onClick={() => handleStartGame(qm.vibe, qm.aiPersonality)}
+                    className={`w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] ${qm.hoverClasses}`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                    <div className="flex-shrink-0">{qm.icon}</div>
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{qm.title} <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">- {qm.subtitle}</span></h3>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-300">{qm.description}</p>
                     </div>
+                    </button>
+                ))}
                 </div>
             </div>
-            {showNerdSpecsModal && <NerdSpecsModal onClose={() => setShowNerdSpecsModal(false)} />}
-        </>
+        </div>
     );
 };
 

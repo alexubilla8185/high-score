@@ -17,6 +17,8 @@ import Logo from './components/Logo';
 import InteractiveDemo from './components/InteractiveDemo';
 import ShareButton from './components/ShareButton';
 import WelcomeScreen from './components/WelcomeScreen';
+import ToastContainer from './components/ToastContainer';
+import TekguyzBadge from './components/TekguyzBadge';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -120,6 +122,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-start sm:justify-center p-4 font-sans selection:bg-[#0079FF] selection:text-white">
+        <ToastContainer />
         {( (isDemoMode && (gameState === GameState.Playing || gameState === GameState.Finished)) || gameState === GameState.DemoTour) && (
           <div className="fixed top-4 left-4 z-50">
             <Logo onClick={handleLogoClick} className="w-16 h-16" />
@@ -140,6 +143,7 @@ const App: React.FC = () => {
             <Spinner />
           </div>
         )}
+        <TekguyzBadge theme={state.theme} />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, FormEvent } from 'react';
 import { QuestionType } from '../types';
 import { useGame } from '../context/GameContext';
@@ -30,27 +31,38 @@ const QuestionCard: React.FC = () => {
     if (question.type === QuestionType.MultipleChoice) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {question.options?.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                if (isAnswered) return;
-                setSelectedAnswer(option);
-                handleAnswer(option);
-              }}
-              disabled={isAnswered}
-              className={`w-full p-4 rounded-lg text-left transition-all duration-300 transform font-semibold border-2 
-                ${isAnswered && question.answer === option
-                  ? 'bg-[#00DFA2] text-black border-[#00DFA2] scale-105 shadow-lg' // Correct answer shown after answering
-                  : isAnswered && userAnswers[currentQuestionIndex] === option
-                  ? 'bg-pink-200 dark:bg-[#FF0060]/50 text-black dark:text-white border-[#FF0060] scale-100' // Incorrect answer shown
-                  : 'bg-white/50 dark:bg-neutral-900/50 border-gray-200 dark:border-neutral-800 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#00DFA2]'}
-                ${isAnswered ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]`}
-            >
-              {option}
-            </button>
-          ))}
+          {question.options?.map((option, index) => {
+            const isCorrectAnswer = question.answer === option;
+            const isUserSelection = userAnswers[currentQuestionIndex] === option;
+            
+            let buttonClass = 'bg-white/50 dark:bg-neutral-900/50 border-gray-200 dark:border-neutral-800 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#00DFA2]';
+            if (isAnswered) {
+              if (isCorrectAnswer) {
+                buttonClass = 'bg-[#00DFA2] text-black border-[#00DFA2] scale-105 shadow-lg';
+              } else if (isUserSelection) {
+                buttonClass = 'bg-pink-200 dark:bg-[#FF0060]/50 text-black dark:text-white border-[#FF0060] scale-100';
+              }
+            }
+            
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  if (isAnswered) return;
+                  setSelectedAnswer(option);
+                  handleAnswer(option);
+                }}
+                disabled={isAnswered}
+                className={`w-full p-4 rounded-lg text-left transition-all duration-300 transform font-semibold border-2 ${buttonClass}
+                  ${isAnswered ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]`}
+              >
+                {option}
+                {isAnswered && isCorrectAnswer && <span className="sr-only">(Correct answer)</span>}
+                {isAnswered && isUserSelection && !isCorrectAnswer && <span className="sr-only">(Your incorrect answer)</span>}
+              </button>
+            );
+          })}
         </div>
       );
     }
