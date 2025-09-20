@@ -117,7 +117,6 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
         localStorage.setItem('hapticEnabled', JSON.stringify(newHapticState));
         return { ...state, isHapticEnabled: newHapticState };
     }
-    // FIX: Add a reducer case to handle setting the AI personality.
     case 'SET_AI_PERSONALITY':
         return { ...state, aiPersonality: action.payload };
     case 'UPGRADE_TO_PRO': {

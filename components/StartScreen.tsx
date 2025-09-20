@@ -1,9 +1,10 @@
 
 
 import React from 'react';
-import { Vibe, AIPersonality } from '../types';
+import { Vibe } from '../types';
 import { useGame } from '../context/GameContext';
 import Logo from './Logo';
+import AIPersonalitySelector from './AIPersonalitySelector';
 
 const BobMarleyIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-teal-500 dark:text-[#00DFA2] group-hover:animate-pulse">
@@ -29,41 +30,38 @@ const SnoopDoggIcon = () => (
     </svg>
 );
 
-const quizmasters = [
+const vibes = [
     { 
-        vibe: Vibe.Buzzed, 
-        aiPersonality: AIPersonality.BobMarley,
+        vibe: Vibe.Buzzed,
         icon: <BobMarleyIcon />, 
-        title: 'Bob Marley', 
-        subtitle: 'Mellow Riddims',
-        description: 'Peaceful, positive, and philosophical questions. A gentle lift-off for the soul.',
+        title: 'Buzzed', 
+        subtitle: 'A Gentle Lift-off',
+        description: 'Lighthearted, silly, and simple questions. Perfect for a mellow mood and some easy giggles.',
         hoverClasses: 'hover:scale-[1.02]',
     },
     { 
         vibe: Vibe.Toasted, 
-        aiPersonality: AIPersonality.WillieNelson,
         icon: <WillieNelsonIcon />, 
-        title: 'Willie Nelson', 
-        subtitle: 'On the Road Again',
-        description: 'Laid-back, rambling, and homespun riddles. The classic, surreal road trip experience.',
+        title: 'Toasted', 
+        subtitle: 'The Classic Experience',
+        description: 'A surreal mix of creative riddles and bizarre scenarios. The perfect balance of weird and wonderful.',
         hoverClasses: 'hover:scale-[1.02] hover:-rotate-1',
     },
     { 
         vibe: Vibe.Voyager, 
-        aiPersonality: AIPersonality.SnoopDogg,
         icon: <SnoopDoggIcon />, 
-        title: 'Snoop Dogg', 
-        subtitle: 'Cosmic Doggfather',
-        description: 'Ultra-relaxed, smooth, and reality-bending questions. For when you want to question everything, ya dig?',
+        title: 'Voyager', 
+        subtitle: 'A Cosmic Journey',
+        description: 'Deeply philosophical and reality-bending questions. For when you want to question everything.',
         hoverClasses: 'hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-[#0079FF]/30',
     },
 ];
 
 const StartScreen: React.FC = () => {
-    const { dispatch } = useGame();
+    const { state, dispatch } = useGame();
     
-    const handleStartGame = (vibe: Vibe, aiPersonality: AIPersonality) => {
-        dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality } });
+    const handleStartGame = (vibe: Vibe) => {
+        dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality: state.aiPersonality } });
     };
     
     return (
@@ -71,20 +69,23 @@ const StartScreen: React.FC = () => {
             <Logo />
             <h1 className="sr-only">Higher Please</h1>
             <div className="w-full max-w-lg flex flex-col items-center">
-                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2] mt-4">Choose Your Quizmaster</h2>
+                <div className="mb-8 w-full">
+                    <AIPersonalitySelector />
+                </div>
+                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Vibe</h2>
                 <div className="w-full space-y-4">
-                {quizmasters.map((qm, index) => (
+                {vibes.map((v, index) => (
                     <button
-                    key={qm.aiPersonality}
-                    onClick={() => handleStartGame(qm.vibe, qm.aiPersonality)}
-                    className={`w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] ${qm.hoverClasses}`}
-                    style={{ animationDelay: `${index * 100}ms` }}
+                        key={v.vibe}
+                        onClick={() => handleStartGame(v.vibe)}
+                        className={`w-full p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] ${v.hoverClasses}`}
+                        style={{ animationDelay: `${index * 100}ms` }}
                     >
-                    <div className="flex-shrink-0">{qm.icon}</div>
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{qm.title} <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">- {qm.subtitle}</span></h3>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-300">{qm.description}</p>
-                    </div>
+                        <div className="flex-shrink-0">{v.icon}</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{v.title} <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">- {v.subtitle}</span></h3>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-300">{v.description}</p>
+                        </div>
                     </button>
                 ))}
                 </div>

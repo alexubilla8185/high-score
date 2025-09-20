@@ -47,7 +47,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
         setConfirmPassword('');
         setValidationErrors({ email: '', password: '', confirmPassword: '' });
         setAuthError('');
-        // Fix: Corrected typo from `setIsPasswordVisible` to `setPasswordVisible`.
         setPasswordVisible(false);
     }, [view]);
 

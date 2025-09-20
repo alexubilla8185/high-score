@@ -2,7 +2,6 @@ import React from 'react';
 import { useGame } from '../context/GameContext';
 import { AIPersonality } from '../types';
 
-// FIX: Use correct enum members from AIPersonality.
 const personalityOptions = [
     { id: AIPersonality.BobMarley, label: 'Bob Marley', description: 'Chill, philosophical vibes.' },
     { id: AIPersonality.WillieNelson, label: 'Willie Nelson', description: 'Outlaw country wisdom.' },
@@ -14,7 +13,6 @@ const AIPersonalitySelector: React.FC = () => {
     const { aiPersonality } = state;
 
     const handlePersonalityChange = (personality: AIPersonality) => {
-        // FIX: Add 'SET_AI_PERSONALITY' to Action type and handle in reducer.
         dispatch({ type: 'SET_AI_PERSONALITY', payload: personality });
     };
 

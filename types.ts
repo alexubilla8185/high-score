@@ -57,7 +57,6 @@ export type Action =
   | { type: 'TICK_TIMER' }
   | { type: 'TOGGLE_SOUND' }
   | { type: 'TOGGLE_HAPTIC' }
-  // FIX: Add the SET_AI_PERSONALITY action type.
   | { type: 'SET_AI_PERSONALITY'; payload: AIPersonality }
   | { type: 'UPGRADE_TO_PRO' }
   | { type: 'LOGOUT' };
