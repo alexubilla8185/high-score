@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
 
@@ -11,7 +12,6 @@ import Timer from './components/Timer';
 import FeedbackOverlay from './components/FeedbackOverlay';
 import Logo from './components/Logo';
 import InteractiveDemo from './components/InteractiveDemo';
-import WelcomeScreen from './components/WelcomeScreen';
 import ToastContainer from './components/ToastContainer';
 import TekguyzBadge from './components/TekguyzBadge';
 import NerdSpecsModal from './components/NerdSpecsModal';
@@ -20,6 +20,8 @@ import SettingsButton from './components/SettingsButton';
 import SettingsPanel from './components/SettingsPanel';
 import HowItWorksModal from './components/HowItWorksModal';
 import HowItWorksButton from './components/HowItWorksButton';
+import LandingPage from './components/LandingPage';
+import AuthModal from './components/AuthModal';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -34,31 +36,38 @@ const App: React.FC = () => {
     isDemoMode
   } = state;
 
-  const [hasSeenWelcome, setHasSeenWelcome] = useState(() => sessionStorage.getItem('hasSeenWelcome') === 'true');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem('isAuthenticated') === 'true');
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNerdSpecs, setShowNerdSpecs] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem('isAuthenticated', isAuthenticated.toString());
+  }, [isAuthenticated]);
+
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
   };
 
-  const handleStartQuiz = () => {
-    sessionStorage.setItem('hasSeenWelcome', 'true');
-    setHasSeenWelcome(true);
+  const handleSignInSuccess = () => {
+    setIsAuthenticated(true);
+    setShowAuthModal(false);
+    dispatch({ type: 'UPGRADE_TO_PRO' });
   };
 
-  const handleStartTour = () => {
-    sessionStorage.setItem('hasSeenWelcome', 'true');
-    setHasSeenWelcome(true);
-    dispatch({ type: 'START_DEMO_TOUR' });
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    dispatch({ type: 'LOGOUT' });
+    setIsSettingsOpen(false);
   };
 
-  const renderContent = () => {
-    if (!hasSeenWelcome && gameState === GameState.Idle) {
-      return <WelcomeScreen onStartQuiz={handleStartQuiz} onStartTour={handleStartTour} />;
-    }
-    
+  const handleStartDemo = () => {
+    dispatch({ type: 'START_DEMO' });
+  };
+
+  const renderGameContent = () => {
     switch (gameState) {
       case GameState.Loading:
         return (
@@ -108,24 +117,32 @@ const App: React.FC = () => {
       
       case GameState.Idle:
       default:
-        return <StartScreen />;
+        // When idle, show the start screen for authenticated users,
+        // otherwise show the main landing page.
+        if (isAuthenticated) {
+            return <StartScreen />;
+        }
+        return <LandingPage onEnterApp={() => setShowAuthModal(true)} onPlayDemo={handleStartDemo} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-start sm:justify-center p-4 font-sans selection:bg-[#0079FF] selection:text-white">
         <ToastContainer />
-        {( (isDemoMode && (gameState === GameState.Playing || gameState === GameState.Finished)) || gameState === GameState.DemoTour) && (
-          <div className="fixed top-4 left-4 z-50">
-            <Logo onClick={handleLogoClick} className="w-16 h-16" />
-          </div>
+        {/* Show header icons if not on the unauthenticated, idle landing page */}
+        { (isAuthenticated || gameState !== GameState.Idle) && (
+          <>
+            <div className="fixed top-4 left-4 z-50">
+              <Logo onClick={handleLogoClick} className="w-16 h-16" />
+            </div>
+            <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+              <HowItWorksButton onClick={() => setShowHowItWorks(true)} isActive={showHowItWorks} />
+              <SettingsButton onClick={() => setIsSettingsOpen(true)} isActive={isSettingsOpen} />
+            </div>
+          </>
         )}
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-          <HowItWorksButton onClick={() => setShowHowItWorks(true)} isActive={showHowItWorks} />
-          <SettingsButton onClick={() => setIsSettingsOpen(true)} isActive={isSettingsOpen} />
-        </div>
         <main className="w-full max-w-3xl flex flex-col items-center justify-center flex-grow">
-          {renderContent()}
+          {renderGameContent()}
         </main>
         {feedback && <FeedbackOverlay feedback={feedback} />}
         {isProcessingAnswer && !feedback && (
@@ -134,9 +151,16 @@ const App: React.FC = () => {
           </div>
         )}
         <TekguyzBadge theme={state.theme} onIconClick={() => setShowNerdSpecs(true)} />
+
         {showNerdSpecs && <NerdSpecsModal onClose={() => setShowNerdSpecs(false)} />}
-        <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+        <SettingsPanel 
+          isOpen={isSettingsOpen} 
+          onClose={() => setIsSettingsOpen(false)} 
+          isAuthenticated={isAuthenticated}
+          onSignOut={handleSignOut}
+        />
         {showHowItWorks && <HowItWorksModal onClose={() => setShowHowItWorks(false)} />}
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onSignInSuccess={handleSignInSuccess} onTakeTour={() => { setShowAuthModal(false); dispatch({type: 'START_DEMO_TOUR'})}} />}
     </div>
   );
 };

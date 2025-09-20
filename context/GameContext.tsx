@@ -141,11 +141,14 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   useEffect(() => {
     // Theme
     const storedTheme = localStorage.getItem('theme') as Theme | null;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+    // Default to dark mode if no theme is set in localStorage.
+    const initialTheme = storedTheme || 'dark';
 
-    if (initialTheme === 'dark') document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     dispatch({ type: 'SET_THEME', payload: initialTheme });
 
     // Sound (default to not muted)

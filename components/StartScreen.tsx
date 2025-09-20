@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
@@ -27,36 +26,6 @@ const SnoopDoggIcon = () => (
         <path d="M10 13.5H14" stroke="currentColor" strokeWidth="1.5"/>
         <path d="M6 12L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
         <path d="M18 12L17 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-);
-
-const StrainIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M11 14C9.5 14 7 12 7 9C7 6 9.5 4 11 4C12.5 4 15 6 15 9C15 12 12.5 14 11 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M11 4V1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M11 14V17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M15.5 11.5L18 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M6.5 6.5L4 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const LyricIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-    <path d="M9 18V5L20 3V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M17 19C18.6569 19 20 17.6569 20 16C20 14.3431 18.6569 13 17 13C15.3431 13 14 14.3431 14 16C14 17.6569 15.3431 19 17 19Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const MunchieIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-        <path d="M5 13L19 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M4.5 18H19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M5 10C5 6.68629 7.68629 4 11 4H13C16.3137 4 19 6.68629 19 10V10H5V10Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-        <path d="M7 16L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17 16L18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
@@ -90,34 +59,11 @@ const vibes = [
     },
 ];
 
-const comingSoonGames = [
-    {
-        icon: <StrainIcon />,
-        title: 'Guess the Strain',
-        description: 'Match the bud to the iconic name.'
-    },
-    {
-        icon: <LyricIcon />,
-        title: 'Finish the Lyric',
-        description: 'Test your knowledge of stoner anthems.'
-    },
-    {
-        icon: <MunchieIcon />,
-        title: 'The Munchie Mashup',
-        description: 'Invent a dish from random ingredients.'
-    }
-];
-
 const StartScreen: React.FC = () => {
     const { dispatch } = useGame();
-    const { addToast } = useToast();
     
     const handleStartGame = (vibe: Vibe, personality: AIPersonality) => {
         dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality: personality } });
-    };
-
-    const handleComingSoon = () => {
-        addToast("Patience, young padawan. These special rounds are still brewin'.", 'info');
     };
     
     return (
@@ -141,29 +87,6 @@ const StartScreen: React.FC = () => {
                         </div>
                     </button>
                 ))}
-                </div>
-
-                <div className="w-full mt-8 border-t-2 border-dashed border-gray-200 dark:border-neutral-800 pt-6">
-                    <h3 className="text-xl font-bold text-center mb-4 text-neutral-500 dark:text-neutral-400">
-                        Freshly Rolled Features
-                        <span className="block text-xs font-medium">(Coming Soon)</span>
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {comingSoonGames.map((game, index) => (
-                            <button
-                                key={index}
-                                onClick={handleComingSoon}
-                                className="w-full p-4 bg-white/30 dark:bg-neutral-900/40 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-center flex flex-col items-center justify-center hover:bg-gray-100/50 dark:hover:bg-neutral-800/60 hover:border-[#0079FF]/50 transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] opacity-70 hover:opacity-100"
-                                aria-label={`${game.title} - Coming Soon`}
-                            >
-                                <div className="flex-shrink-0 text-neutral-500 dark:text-neutral-400 group-hover:text-[#0079FF] transition-colors">{game.icon}</div>
-                                <div className="mt-2">
-                                    <h4 className="text-sm font-bold text-gray-800 dark:text-white">{game.title}</h4>
-                                    <p className="text-xs text-neutral-600 dark:text-neutral-300">{game.description}</p>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
                 </div>
             </div>
         </div>

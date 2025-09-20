@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import Logo from './Logo';
@@ -13,6 +10,8 @@ const ThemeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w
 const HapticIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 4h10a1 1 0 011 1v14a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1z" /><path strokeLinecap="round" strokeLinejoin="round" d="M4 8l-1 2 1 2M20 8l1 2-1 2" /></svg>;
 const SoundIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5 5 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>;
 const AIBanterIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
+const GoogleIcon = () => <svg className="w-5 h-5 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.641-3.657-11.088-8.508l-6.521 5.027C9.507 39.582 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.021 35.841 44 30.138 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>;
+
 
 const proFeatures = [
     { icon: <AIBanterIcon />, title: "Witty AI Banter", description: "Our Quizmaster fires back with funny, custom-generated feedback." },
@@ -84,16 +83,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
 
-    const handleAuthSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleAuthAction = async (isGoogleAuth = false) => {
         setIsLoading(true);
         setAuthError('');
         // Simulate an API call
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // For this demo, we'll just simulate a successful sign-in
-        // In a real app, you would handle actual authentication logic here
-        if (email === "fail@test.com") {
+        if (email === "fail@test.com" && !isGoogleAuth) {
              setAuthError('Invalid credentials. Please try again.');
              setIsLoading(false);
         } else {
@@ -101,6 +97,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
         }
     };
 
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleAuthAction(false);
+    }
+        
     const isSignUpFormValid = 
         email &&
         password &&
@@ -120,7 +121,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
             <h2 className="text-3xl font-bold mb-2">{isSignUp ? 'Create Account' : 'Sign In'}</h2>
             <p className="text-neutral-500 dark:text-neutral-400 mb-6">to unlock Pro features.</p>
             
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
+             <button onClick={() => handleAuthAction(true)} disabled={isLoading} className="w-full mb-4 flex items-center justify-center bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-full shadow-sm hover:bg-gray-100/50 dark:hover:bg-neutral-700/50 hover:border-[#4285F4] transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#4285F4]">
+                <GoogleIcon /> Sign {isSignUp ? 'up' : 'in'} with Google
+            </button>
+
+            <div className="relative flex items-center my-2">
+                <div className="flex-grow border-t border-gray-200 dark:border-neutral-700"></div>
+                <span className="flex-shrink mx-4 text-xs font-semibold text-neutral-400 dark:text-neutral-500">OR</span>
+                <div className="flex-grow border-t border-gray-200 dark:border-neutral-700"></div>
+            </div>
+
+            <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div className="text-left">
                     <input
                         type="email"

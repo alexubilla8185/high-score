@@ -7,9 +7,11 @@ import ToggleSwitch from './ToggleSwitch';
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  isAuthenticated: boolean;
+  onSignOut: () => void;
 }
 
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, isAuthenticated, onSignOut }) => {
   const { state, dispatch } = useGame();
   const { addToast } = useToast();
 
@@ -95,10 +97,18 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
             </button>
             <button
               onClick={handleRestart}
-              className="w-full bg-[#FF0060]/80 hover:bg-[#FF0060] text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+              className="w-full bg-[#0079FF]/80 hover:bg-[#0079FF] text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DFA2] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
             >
               Restart Quiz
             </button>
+            {isAuthenticated && (
+               <button
+                  onClick={onSignOut}
+                  className="w-full bg-[#FF0060]/80 hover:bg-[#FF0060] text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black"
+                >
+                  Sign Out
+                </button>
+            )}
         </div>
       </div>
     </div>
