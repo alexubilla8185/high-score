@@ -19,6 +19,7 @@ import ShareButton from './components/ShareButton';
 import WelcomeScreen from './components/WelcomeScreen';
 import ToastContainer from './components/ToastContainer';
 import TekguyzBadge from './components/TekguyzBadge';
+import NerdSpecsModal from './components/NerdSpecsModal';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   } = state;
 
   const [hasSeenWelcome, setHasSeenWelcome] = useState(() => sessionStorage.getItem('hasSeenWelcome') === 'true');
+  const [showNerdSpecs, setShowNerdSpecs] = useState(false);
 
   const handlePremiumFeatureToggle = (actionType: 'TOGGLE_HAPTIC' | 'TOGGLE_SOUND' | 'TOGGLE_THEME') => {
     dispatch({ type: actionType });
@@ -143,7 +145,8 @@ const App: React.FC = () => {
             <Spinner />
           </div>
         )}
-        <TekguyzBadge theme={state.theme} />
+        <TekguyzBadge theme={state.theme} onIconClick={() => setShowNerdSpecs(true)} />
+        {showNerdSpecs && <NerdSpecsModal onClose={() => setShowNerdSpecs(false)} />}
     </div>
   );
 };

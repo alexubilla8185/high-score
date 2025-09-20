@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 const LogomarkIcon: React.FC<{ className?: string }> = ({ className }) => {
@@ -20,24 +21,40 @@ const LogomarkIcon: React.FC<{ className?: string }> = ({ className }) => {
 
 interface TekguyzBadgeProps {
   theme: 'dark' | 'light';
+  onIconClick: () => void;
 }
 
-const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark' }) => {
+const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark', onIconClick }) => {
   const themeClasses = {
-    dark: 'bg-black text-gray-400 hover:text-white',
-    light: 'bg-white text-gray-500 hover:text-black'
+    dark: 'bg-black text-gray-400',
+    light: 'bg-white text-gray-500'
+  };
+  
+  const hoverClasses = {
+    dark: 'hover:text-white',
+    light: 'hover:text-black'
   };
 
   return (
-    <a
-      href="https://tekguyz.com?ref=made-by-tekguyz"
-      target="_blank"
-      rel="noopener noreferrer"
+    <div
       className={`fixed bottom-4 right-4 flex items-center px-3 py-1.5 rounded-lg shadow-lg transition-colors duration-300 text-xs font-semibold z-50 ${themeClasses[theme]}`}
     >
-      <LogomarkIcon className="w-4 h-4 mr-1.5" />
-      <span>Made by <strong>TEKGUYZ</strong></span>
-    </a>
+      <button
+        onClick={onIconClick}
+        aria-label="Show app specifications"
+        className={`p-1 -ml-1 mr-1.5 rounded-full transition-colors duration-300 ${hoverClasses[theme]} focus:outline-none focus-visible:ring-2 focus-visible:ring-current`}
+      >
+        <LogomarkIcon className="w-4 h-4" />
+      </button>
+      <a
+        href="https://tekguyz.com?ref=made-by-tekguyz"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`transition-colors duration-300 ${hoverClasses[theme]} focus:outline-none focus-visible:underline`}
+      >
+        <span>Made by <strong>TEKGUYZ</strong></span>
+      </a>
+    </div>
   );
 };
 
