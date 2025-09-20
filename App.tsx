@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -28,7 +24,7 @@ import { useAuth } from './context/AuthContext';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
-  const { user, login, logout, authReady } = useAuth();
+  const { isAuthenticated, login, logout, isLoading } = useAuth();
   const { 
     gameState, 
     questions, 
@@ -45,8 +41,6 @@ const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   
-  const isAuthenticated = !!user;
-
   // Timed toast notification effect
   useEffect(() => {
     let timer: number | undefined;
@@ -92,12 +86,12 @@ const App: React.FC = () => {
   }
 
   const renderGameContent = () => {
-    // If auth is not ready yet, show a global spinner to prevent content flashing
-    if (!authReady && gameState === GameState.Idle) {
+    // If auth is loading, show a global spinner to prevent content flashing
+    if (isLoading && gameState === GameState.Idle) {
         return (
              <div className="flex flex-col items-center justify-center h-full">
                 <Logo className="w-32 h-32 animate-spin-slow" />
-                <p className="mt-4 text-lg text-teal-600 dark:text-[#00DFA2] animate-pulse-subtle">Connecting to the cosmos...</p>
+                <p className="mt-4 text-lg text-teal-600 dark:text-[#00DFA2] animate-pulse-subtle">Initializing Authentication...</p>
             </div>
         );
     }

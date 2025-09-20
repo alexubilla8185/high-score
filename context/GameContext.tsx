@@ -136,7 +136,7 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
 
 export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  const { user } = useAuth();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth();
   const timerRef = useRef<number | null>(null);
   
   // Effect for setting initial theme, sound, and haptic state from localStorage
@@ -173,18 +173,22 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           const shuffled = [...demoQuestions].sort(() => 0.5 - Math.random());
           dispatch({ type: 'GAME_LOAD_SUCCESS', payload: shuffled.slice(0, 5) });
         }, 800);
-      } else if (state.vibe) {
-        const token = user?.token?.access_token;
-        fetchQuizQuestions(state.vibe, state.aiPersonality, token)
-          .then(questions => dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions }))
-          .catch(err => {
-            console.error(err);
-            const message = err instanceof Error ? err.message : 'An unknown cosmic anomaly occurred.';
-            dispatch({ type: 'GAME_LOAD_FAILURE', payload: message });
-          });
+      } else if (state.vibe && isAuthenticated) {
+        const getQuestions = async () => {
+          try {
+            const token = await getAccessTokenSilently();
+            const questions = await fetchQuizQuestions(state.vibe!, state.aiPersonality, token);
+            dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions });
+          } catch (err) {
+             console.error(err);
+             const message = err instanceof Error ? err.message : 'An unknown cosmic anomaly occurred.';
+             dispatch({ type: 'GAME_LOAD_FAILURE', payload: message });
+          }
+        };
+        getQuestions();
       }
     }
-  }, [state.gameState, state.vibe, state.isDemoMode, state.aiPersonality, user]);
+  }, [state.gameState, state.vibe, state.isDemoMode, state.aiPersonality, isAuthenticated, getAccessTokenSilently]);
   
   // Effect for managing the game timer (countdown)
   useEffect(() => {
@@ -213,71 +217,70 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   
   // Effect for processing answers
   useEffect(() => {
-    // This effect runs only when a new answer has been submitted.
-    if (state.userAnswers.length === state.currentQuestionIndex + 1 && state.gameState === GameState.Playing) {
-      const processAnswer = async () => {
-        dispatch({ type: 'PROCESS_ANSWER_START' });
+    const processAnswer = async () => {
+        if (state.userAnswers.length === state.currentQuestionIndex + 1 && state.gameState === GameState.Playing) {
+          dispatch({ type: 'PROCESS_ANSWER_START' });
 
-        const currentQuestion = state.questions[state.currentQuestionIndex];
-        const userAnswer = state.userAnswers[state.currentQuestionIndex];
-        const isTimedOut = userAnswer === ANSWER_TIMED_OUT;
-        const isCorrect = !isTimedOut && userAnswer.trim().toLowerCase() === currentQuestion.answer.trim().toLowerCase();
-        
-        let feedbackToShow: string | null = null;
-        let hapticPattern: HapticPattern | null = null;
-        let delay;
+          const currentQuestion = state.questions[state.currentQuestionIndex];
+          const userAnswer = state.userAnswers[state.currentQuestionIndex];
+          const isTimedOut = userAnswer === ANSWER_TIMED_OUT;
+          const isCorrect = !isTimedOut && userAnswer.trim().toLowerCase() === currentQuestion.answer.trim().toLowerCase();
+          
+          let feedbackToShow: string | null = null;
+          let hapticPattern: HapticPattern | null = null;
+          let delay;
 
-        if(isTimedOut) {
-            feedbackToShow = "Time's Up!";
-            hapticPattern = 'time_up';
-            if (!state.isMuted) playSound('incorrect');
-        } else {
-            hapticPattern = isCorrect ? 'correct' : 'incorrect';
-            if (!state.isMuted) playSound(isCorrect ? 'correct' : 'incorrect');
-
-            const isTextEntry = currentQuestion.type === QuestionType.ShortAnswer || currentQuestion.type === QuestionType.ImageQuestion;
-            if (state.isDemoMode && isTextEntry && currentQuestion.demoFeedback?.length) {
-                const feedbackOptions = currentQuestion.demoFeedback;
-                feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
-            } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.6) { // 60% chance of getting feedback
-                try {
-                    const token = user?.token?.access_token;
-                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality, token);
-                } catch (error) {
-                    console.error("Failed to get feedback, proceeding without it.", error);
-                }
-            }
-        }
-        
-        if (state.isHapticEnabled && hapticPattern) {
-            triggerHaptic(hapticPattern);
-        }
-
-        if (feedbackToShow) {
-          dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
-          // Random delay between 3 and 5 seconds to feel more natural
-          delay = 3000 + Math.random() * 2000;
-        } else {
-          // If no feedback, shorter random delay between 0.5 and 1 second
-          delay = 500 + Math.random() * 500;
-        }
-
-        setTimeout(() => {
-          dispatch({ type: 'HIDE_FEEDBACK' });
-          if (state.currentQuestionIndex < state.questions.length - 1) {
-            if (!state.isMuted) playSound('next');
-            dispatch({ type: 'NEXT_QUESTION' });
+          if(isTimedOut) {
+              feedbackToShow = "Time's Up!";
+              hapticPattern = 'time_up';
+              if (!state.isMuted) playSound('incorrect');
           } else {
-            if (!state.isMuted) playSound('finish');
-            dispatch({ type: 'FINISH_GAME' });
+              hapticPattern = isCorrect ? 'correct' : 'incorrect';
+              if (!state.isMuted) playSound(isCorrect ? 'correct' : 'incorrect');
+
+              const isTextEntry = currentQuestion.type === QuestionType.ShortAnswer || currentQuestion.type === QuestionType.ImageQuestion;
+              if (state.isDemoMode && isTextEntry && currentQuestion.demoFeedback?.length) {
+                  const feedbackOptions = currentQuestion.demoFeedback;
+                  feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
+              } else if (!state.isDemoMode && isTextEntry && isAuthenticated && Math.random() < 0.6) { // 60% chance of getting feedback
+                  try {
+                      const token = await getAccessTokenSilently();
+                      feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality, token);
+                  } catch (error) {
+                      console.error("Failed to get feedback, proceeding without it.", error);
+                  }
+              }
           }
-          dispatch({ type: 'PROCESS_ANSWER_END' });
-        }, delay);
+          
+          if (state.isHapticEnabled && hapticPattern) {
+              triggerHaptic(hapticPattern);
+          }
+
+          if (feedbackToShow) {
+            dispatch({ type: 'SHOW_FEEDBACK', payload: feedbackToShow });
+            // Random delay between 3 and 5 seconds to feel more natural
+            delay = 3000 + Math.random() * 2000;
+          } else {
+            // If no feedback, shorter random delay between 0.5 and 1 second
+            delay = 500 + Math.random() * 500;
+          }
+
+          setTimeout(() => {
+            dispatch({ type: 'HIDE_FEEDBACK' });
+            if (state.currentQuestionIndex < state.questions.length - 1) {
+              if (!state.isMuted) playSound('next');
+              dispatch({ type: 'NEXT_QUESTION' });
+            } else {
+              if (!state.isMuted) playSound('finish');
+              dispatch({ type: 'FINISH_GAME' });
+            }
+            dispatch({ type: 'PROCESS_ANSWER_END' });
+          }, delay);
+        }
       };
       
       processAnswer();
-    }
-  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, state.aiPersonality, dispatch, user]);
+  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, state.aiPersonality, isAuthenticated, getAccessTokenSilently, dispatch]);
 
 
   return (

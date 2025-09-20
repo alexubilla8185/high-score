@@ -1,80 +1,36 @@
-import React, { createContext, useContext, useState, useEffect, FC, ReactNode } from 'react';
-
-// This declares the global netlifyIdentity object that comes from the CDN script
-declare global {
-  interface Window {
-    netlifyIdentity: any;
-  }
-}
+import React, { createContext, useContext, FC, ReactNode } from 'react';
+import { useAuth0, User } from '@auth0/auth0-react';
 
 interface AuthContextType {
-  user: any | null;
+  user: User | undefined;
   login: () => void;
   logout: () => void;
-  authReady: boolean;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  getAccessTokenSilently: (options?: any) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    // Netlify Identity widget is loaded from a script tag in index.html
-    const netlifyIdentity = window.netlifyIdentity;
-
-    if (!netlifyIdentity) {
-      console.warn("Netlify Identity widget script not loaded or found.");
-      setAuthReady(true); // Prevent app from hanging on a loading screen.
-      return;
-    }
-
-    const handleLogin = (user: any) => {
-      setUser(user);
-      netlifyIdentity.close(); // Close the modal on login
-    };
-
-    const handleLogout = () => {
-      setUser(null);
-    };
-
-    const handleInit = (user: any) => {
-      setUser(user);
-      setAuthReady(true);
-    };
-
-    // --- Attach Event Listeners ---
-    netlifyIdentity.on('login', handleLogin);
-    netlifyIdentity.on('logout', handleLogout);
-    netlifyIdentity.on('init', handleInit);
-
-    // --- Init Netlify Identity ---
-    // This must be called after listeners are attached
-    netlifyIdentity.init();
-
-    // --- Cleanup ---
-    // Remove the specific listeners on component unmount
-    return () => {
-      netlifyIdentity.off('login', handleLogin);
-      netlifyIdentity.off('logout', handleLogout);
-      netlifyIdentity.off('init', handleInit);
-    };
-  }, []);
+  const { 
+    user, 
+    loginWithRedirect, 
+    logout: auth0Logout, 
+    isAuthenticated, 
+    isLoading,
+    getAccessTokenSilently 
+  } = useAuth0();
 
   const login = () => {
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.open();
-    }
+    loginWithRedirect();
   };
 
   const logout = () => {
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.logout();
-    }
+    auth0Logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
-  const contextValue = { user, login, logout, authReady };
+  const contextValue = { user, login, logout, isAuthenticated, isLoading, getAccessTokenSilently };
 
   return (
     <AuthContext.Provider value={contextValue}>

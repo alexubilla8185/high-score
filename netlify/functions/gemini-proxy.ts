@@ -1,7 +1,5 @@
-
-
 import { GoogleGenAI, Type } from "@google/genai";
-import type { Handler } from "@netlify/functions";
+import type { Handler, HandlerContext } from "@netlify/functions";
 import { Question, QuestionType, Vibe, AIPersonality } from "../../types";
 
 let ai: GoogleGenAI | null = null;
@@ -128,9 +126,19 @@ const getFunnyFeedback = async (question: string, userAnswer: string, aiPersonal
   return feedbackText;
 };
 
-export const handler: Handler = async (event) => {
+export const handler: Handler = async (event, context: HandlerContext) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+  }
+
+  // The user object is automatically populated by Netlify and the JWT is validated
+  // if Auth0 is configured as an external identity provider.
+  // Docs: https://docs.netlify.com/visitor-access/jwt/
+  const { user } = context.clientContext || {};
+
+  if (!user) {
+    // All API calls from the app are expected to be authenticated.
+    return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized. Please log in.' }) };
   }
 
   try {
