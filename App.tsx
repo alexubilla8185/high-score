@@ -1,6 +1,4 @@
 
-
-
 import React, { useState } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -11,17 +9,15 @@ import ResultsScreen from './components/ResultsScreen';
 import Spinner from './components/Spinner';
 import Timer from './components/Timer';
 import FeedbackOverlay from './components/FeedbackOverlay';
-import ThemeToggle from './components/ThemeToggle';
-import SoundToggle from './components/SoundToggle';
-import HapticToggle from './components/HapticToggle';
 import Logo from './components/Logo';
 import InteractiveDemo from './components/InteractiveDemo';
-import ShareButton from './components/ShareButton';
 import WelcomeScreen from './components/WelcomeScreen';
 import ToastContainer from './components/ToastContainer';
 import TekguyzBadge from './components/TekguyzBadge';
 import NerdSpecsModal from './components/NerdSpecsModal';
 import ErrorDisplay from './components/ErrorDisplay';
+import SettingsButton from './components/SettingsButton';
+import SettingsPanel from './components/SettingsPanel';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
@@ -38,10 +34,7 @@ const App: React.FC = () => {
 
   const [hasSeenWelcome, setHasSeenWelcome] = useState(() => sessionStorage.getItem('hasSeenWelcome') === 'true');
   const [showNerdSpecs, setShowNerdSpecs] = useState(false);
-
-  const handlePremiumFeatureToggle = (actionType: 'TOGGLE_HAPTIC' | 'TOGGLE_SOUND' | 'TOGGLE_THEME') => {
-    dispatch({ type: actionType });
-  };
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
@@ -124,11 +117,8 @@ const App: React.FC = () => {
             <Logo onClick={handleLogoClick} className="w-16 h-16" />
           </div>
         )}
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-          <ShareButton />
-          <HapticToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_HAPTIC')} />
-          <SoundToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_SOUND')} />
-          <ThemeToggle onToggle={() => handlePremiumFeatureToggle('TOGGLE_THEME')} />
+        <div className="fixed top-4 right-4 z-50">
+          <SettingsButton onClick={() => setIsSettingsOpen(true)} />
         </div>
         <main className="w-full max-w-3xl flex flex-col items-center justify-center flex-grow">
           {renderContent()}
@@ -141,6 +131,7 @@ const App: React.FC = () => {
         )}
         <TekguyzBadge theme={state.theme} onIconClick={() => setShowNerdSpecs(true)} />
         {showNerdSpecs && <NerdSpecsModal onClose={() => setShowNerdSpecs(false)} />}
+        <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 };

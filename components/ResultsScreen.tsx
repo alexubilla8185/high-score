@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { QuestionType, Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 
@@ -36,6 +36,26 @@ const ResultsScreen: React.FC = () => {
     const scoreValue = Math.round((correct / questions.length) * 100);
     return { score: scoreValue, correctAnswers: correct };
   }, [questions, userAnswers]);
+
+  const [displayedScore, setDisplayedScore] = useState(0);
+
+  // Score count-up animation using requestAnimationFrame
+  useEffect(() => {
+    if (score === 0) return;
+    let startTimestamp: number | null = null;
+    const duration = 1200; // ms
+
+    const step = (timestamp: number) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        setDisplayedScore(Math.floor(progress * score));
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    const animationFrameId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [score]);
 
   const { title, level, tip, color } = useMemo(() => {
     if (score >= 80) return { title: "Cosmic Voyager", level: "You're orbiting Jupiter!", tip: "You're clearly in the zone. Time to write a poem about a sentient bag of chips or solve the mysteries of the universe. Your snack of choice: anything that crunches.", color: "text-teal-600 dark:text-[#00DFA2]" };
@@ -91,26 +111,26 @@ const ResultsScreen: React.FC = () => {
   return (
     <div className="w-full max-w-3xl p-4 sm:p-6 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200/50 dark:border-neutral-800/50 animate-card-fade-in-up">
       {isDemoMode && (
-          <div className="text-center mb-6 bg-yellow-400/20 text-yellow-600 dark:text-[#F6FA70] py-2 px-4 rounded-lg border border-yellow-500/30">
+          <div className="text-center mb-6 bg-yellow-400/20 text-yellow-600 dark:text-[#F6FA70] py-2 px-4 rounded-lg border border-yellow-500/30 animate-content-fade-in">
               <p className="font-semibold">This is a score from Demo Mode.</p>
               <p className="text-sm">For the full, dynamic experience, try a real game!</p>
           </div>
       )}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
-        <p className={`text-4xl sm:text-5xl font-bold ${color}`}>{title}</p>
-        <p className="text-2xl text-neutral-600 dark:text-neutral-300 mt-2">{level}</p>
+        <h2 className="text-3xl font-bold mb-2 animate-content-fade-in" style={{ animationDelay: '100ms' }}>Quiz Complete!</h2>
+        <p className={`text-4xl sm:text-5xl font-bold ${color} animate-content-fade-in`} style={{ animationDelay: '250ms' }}>{title}</p>
+        <p className="text-2xl text-neutral-600 dark:text-neutral-300 mt-2 animate-content-fade-in" style={{ animationDelay: '400ms' }}>{level}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 text-center mb-8">
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{score}%</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-2xl sm:text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
-        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg"><p className="text-sm text-neutral-600 dark:text-neutral-300">Total Time</p><p className="text-2xl sm:text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '600ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Final Score</p><p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#00DFA2] to-[#F6FA70] text-transparent bg-clip-text">{displayedScore}%</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '750ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Correct Answers</p><p className="text-2xl sm:text-3xl font-bold">{correctAnswers} / {questions.length}</p></div>
+        <div className="bg-gray-100 dark:bg-neutral-900/50 p-4 rounded-lg animate-content-fade-in" style={{ animationDelay: '900ms' }}><p className="text-sm text-neutral-600 dark:text-neutral-300">Total Time</p><p className="text-2xl sm:text-3xl font-bold">{new Date(time * 1000).toISOString().substr(14, 5)}</p></div>
       </div>
       
-      <div className="bg-gray-100 dark:bg-neutral-900/50 p-6 rounded-lg mb-8 text-center"><h3 className="text-xl font-semibold text-teal-600 dark:text-[#00DFA2] mb-2">Cosmic Advice</h3><p className="text-neutral-600 dark:text-neutral-300">{tip}</p></div>
+      <div className="bg-gray-100 dark:bg-neutral-900/50 p-6 rounded-lg mb-8 text-center animate-content-fade-in" style={{ animationDelay: '1100ms' }}><h3 className="text-xl font-semibold text-teal-600 dark:text-[#00DFA2] mb-2">Cosmic Advice</h3><p className="text-neutral-600 dark:text-neutral-300">{tip}</p></div>
 
-      <div className="mb-8">
+      <div className="mb-8 animate-content-fade-in" style={{ animationDelay: '1300ms' }}>
         <h3 className="text-2xl font-bold text-center mb-4">Your Answers</h3>
         <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
             {questions.map((q, i) => {
@@ -147,7 +167,7 @@ const ResultsScreen: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 animate-content-fade-in" style={{ animationDelay: '1400ms' }}>
         {nextQuizInfo && !isDemoMode && <button onClick={() => handleContinue(nextQuizInfo.nextVibe, nextQuizInfo.nextPersonality)} className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-4 px-6 rounded-lg text-lg transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF0060]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">{nextQuizInfo.buttonText}</button>}
         <div className="flex flex-col md:flex-row gap-4">
             <button onClick={handleRestart} className="w-full bg-[#0079FF] hover:bg-[#005cbf] text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">Play Again</button>
