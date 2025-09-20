@@ -46,7 +46,7 @@ const initialState: GameStateShape = {
     theme: 'dark',
     isMuted: true,
     isHapticEnabled: true,
-    isPro: false,
+    isPro: true,
     aiPersonality: AIPersonality.Witty,
 };
 
