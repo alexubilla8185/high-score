@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { GameProvider } from './context/GameContext';
 import { ToastProvider } from './context/ToastContext';
+import { AuthProvider } from './context/AuthContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -14,9 +15,11 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ToastProvider>
-      <GameProvider>
-        <App />
-      </GameProvider>
+      <AuthProvider>
+        <GameProvider>
+          <App />
+        </GameProvider>
+      </AuthProvider>
     </ToastProvider>
   </React.StrictMode>
 );

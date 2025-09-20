@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 interface LandingPageProps {
   onEnterApp: () => void;
   onPlayDemo: () => void;
+  onTakeTour: () => void;
 }
 
 const FeatureIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -64,7 +65,7 @@ const comingSoonGames = [
     }
 ];
 
-const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo, onTakeTour }) => {
   const { addToast } = useToast();
 
   const handleWaitlistSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -87,7 +88,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo }) => 
         <p className="max-w-2xl text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 mb-10">
           An AI-powered quiz that generates surreal and funny questions to see how high your consciousness can fly. Are you buzzed, toasted, or a cosmic voyager?
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <div className="flex flex-col gap-4 w-full max-w-sm">
           <button
             onClick={onEnterApp}
             className="w-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] text-black dark:text-white font-bold text-xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:shadow-[#00DFA2]/40 dark:hover:shadow-[#00DFA2]/30 hover:scale-105 transition-all duration-300 transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]"
@@ -100,6 +101,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo }) => 
           >
             Play Demo
           </button>
+           <button onClick={onTakeTour} className="text-sm text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#0079FF] rounded-sm">
+              Or, see how it works first
+            </button>
         </div>
       </section>
 

@@ -4,6 +4,7 @@ import { fetchQuizQuestions, fetchFunnyFeedback } from '../services/geminiServic
 import { demoQuestions } from '../services/demoData';
 import { playSound } from '../services/audioPlayer';
 import { triggerHaptic, HapticPattern } from '../services/haptic';
+import { useAuth } from './AuthContext';
 
 type Theme = 'light' | 'dark';
 
@@ -46,7 +47,7 @@ const initialState: GameStateShape = {
     theme: 'dark',
     isMuted: true,
     isHapticEnabled: true,
-    isPro: true,
+    isPro: false, // Default to false, will be upgraded on login
     aiPersonality: AIPersonality.BobMarley,
 };
 
@@ -61,7 +62,7 @@ const GameContext = createContext<{ state: GameStateShape; dispatch: React.Dispa
 const gameReducer = (state: GameStateShape, action: Action | PrivateAction): GameStateShape => {
   switch (action.type) {
     case 'START_GAME':
-      return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false };
+      return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false, isPro: state.isPro };
     case 'START_DEMO':
       return { ...state, ...getInitialState(), gameState: GameState.Loading, isDemoMode: true };
     case 'START_DEMO_TOUR':
@@ -94,7 +95,7 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'LOGOUT':
       return { ...state, ...getInitialState(), isPro: false, aiPersonality: AIPersonality.BobMarley };
     case 'CONTINUE_TO_NEXT_VIBE':
-        return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false };
+        return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false, isPro: state.isPro };
     case 'TICK_TIMER':
         return { ...state, time: Math.max(0, state.time - 1) };
     case 'TOGGLE_THEME': {
@@ -135,6 +136,7 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
 
 export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const { user } = useAuth();
   const timerRef = useRef<number | null>(null);
   
   // Effect for setting initial theme, sound, and haptic state from localStorage
@@ -172,7 +174,8 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           dispatch({ type: 'GAME_LOAD_SUCCESS', payload: shuffled.slice(0, 5) });
         }, 800);
       } else if (state.vibe) {
-        fetchQuizQuestions(state.vibe, state.aiPersonality)
+        const token = user?.token?.access_token;
+        fetchQuizQuestions(state.vibe, state.aiPersonality, token)
           .then(questions => dispatch({ type: 'GAME_LOAD_SUCCESS', payload: questions }))
           .catch(err => {
             console.error(err);
@@ -181,7 +184,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           });
       }
     }
-  }, [state.gameState, state.vibe, state.isDemoMode, state.aiPersonality]);
+  }, [state.gameState, state.vibe, state.isDemoMode, state.aiPersonality, user]);
   
   // Effect for managing the game timer (countdown)
   useEffect(() => {
@@ -238,7 +241,8 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
                 feedbackToShow = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];
             } else if (!state.isDemoMode && isTextEntry && Math.random() < 0.4) {
                 try {
-                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality);
+                    const token = user?.token?.access_token;
+                    feedbackToShow = await fetchFunnyFeedback(currentQuestion.question, userAnswer, state.aiPersonality, token);
                 } catch (error) {
                     console.error("Failed to get feedback, proceeding without it.", error);
                 }
@@ -269,7 +273,7 @@ export const GameProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       
       processAnswer();
     }
-  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, state.aiPersonality, dispatch]);
+  }, [state.userAnswers.length, state.currentQuestionIndex, state.questions, state.gameState, state.isDemoMode, state.isMuted, state.isHapticEnabled, state.aiPersonality, dispatch, user]);
 
 
   return (

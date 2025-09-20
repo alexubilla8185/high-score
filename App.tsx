@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useEffect } from 'react';
 import { GameState } from './types';
 import { useGame, QUESTION_TIME_LIMIT } from './context/GameContext';
@@ -22,11 +23,12 @@ import SettingsPanel from './components/SettingsPanel';
 import HowItWorksModal from './components/HowItWorksModal';
 import HowItWorksButton from './components/HowItWorksButton';
 import LandingPage from './components/LandingPage';
-import AuthModal from './components/AuthModal';
 import { useToast } from './context/ToastContext';
+import { useAuth } from './context/AuthContext';
 
 const App: React.FC = () => {
   const { state, dispatch } = useGame();
+  const { user, login, logout, authReady } = useAuth();
   const { 
     gameState, 
     questions, 
@@ -39,15 +41,11 @@ const App: React.FC = () => {
   } = state;
   const { addToast } = useToast();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem('isAuthenticated') === 'true');
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNerdSpecs, setShowNerdSpecs] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
-
-  useEffect(() => {
-    sessionStorage.setItem('isAuthenticated', isAuthenticated.toString());
-  }, [isAuthenticated]);
+  
+  const isAuthenticated = !!user;
 
   // Timed toast notification effect
   useEffect(() => {
@@ -66,28 +64,44 @@ const App: React.FC = () => {
     };
   }, [isAuthenticated, gameState, addToast]);
 
+  // Effect to handle user login
+  useEffect(() => {
+    if (isAuthenticated) {
+        dispatch({ type: 'UPGRADE_TO_PRO' });
+    } else {
+        dispatch({ type: 'LOGOUT' });
+    }
+  }, [isAuthenticated, dispatch]);
+
 
   const handleLogoClick = () => {
     dispatch({ type: 'RESTART_GAME' });
   };
-
-  const handleSignInSuccess = () => {
-    setIsAuthenticated(true);
-    setShowAuthModal(false);
-    dispatch({ type: 'UPGRADE_TO_PRO' });
-  };
-
-  const handleSignOut = () => {
-    setIsAuthenticated(false);
-    dispatch({ type: 'LOGOUT' });
-    setIsSettingsOpen(false);
-  };
-
+  
   const handleStartDemo = () => {
     dispatch({ type: 'START_DEMO' });
   };
+  
+  const handleStartTour = () => {
+      dispatch({ type: 'START_DEMO_TOUR' });
+  };
+
+  const handleSignOut = () => {
+    logout();
+    setIsSettingsOpen(false);
+  }
 
   const renderGameContent = () => {
+    // If auth is not ready yet, show a global spinner to prevent content flashing
+    if (!authReady && gameState === GameState.Idle) {
+        return (
+             <div className="flex flex-col items-center justify-center h-full">
+                <Logo className="w-32 h-32 animate-spin-slow" />
+                <p className="mt-4 text-lg text-teal-600 dark:text-[#00DFA2] animate-pulse-subtle">Connecting to the cosmos...</p>
+            </div>
+        );
+    }
+    
     switch (gameState) {
       case GameState.Loading:
         return (
@@ -142,7 +156,7 @@ const App: React.FC = () => {
         if (isAuthenticated) {
             return <StartScreen />;
         }
-        return <LandingPage onEnterApp={() => setShowAuthModal(true)} onPlayDemo={handleStartDemo} />;
+        return <LandingPage onEnterApp={login} onPlayDemo={handleStartDemo} onTakeTour={handleStartTour} />;
     }
   };
 
@@ -180,7 +194,6 @@ const App: React.FC = () => {
           onSignOut={handleSignOut}
         />
         {showHowItWorks && <HowItWorksModal onClose={() => setShowHowItWorks(false)} />}
-        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onSignInSuccess={handleSignInSuccess} onTakeTour={() => { setShowAuthModal(false); dispatch({type: 'START_DEMO_TOUR'})}} />}
     </div>
   );
 };

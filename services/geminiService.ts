@@ -1,4 +1,5 @@
 
+
 import { Question, Vibe, AIPersonality } from "../types";
 
 const PROXY_ENDPOINT = '/.netlify/functions/gemini-proxy';
@@ -13,10 +14,18 @@ const handleFetchErrors = async (response: Response) => {
     return response.json();
 };
 
-export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promise<Question[]> => {
+const getHeaders = (token?: string): HeadersInit => {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
+}
+
+export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality, token?: string): Promise<Question[]> => {
   const response = await fetch(PROXY_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(token),
     body: JSON.stringify({ action: 'getQuestions', vibe, aiPersonality }),
   });
 
@@ -24,10 +33,10 @@ export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonalit
   return questions;
 };
 
-export const fetchFunnyFeedback = async (question: string, userAnswer: string, aiPersonality: AIPersonality): Promise<string> => {
+export const fetchFunnyFeedback = async (question: string, userAnswer: string, aiPersonality: AIPersonality, token?: string): Promise<string> => {
     const response = await fetch(PROXY_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(token),
         body: JSON.stringify({ action: 'getFeedback', question, userAnswer, aiPersonality }),
     });
 
