@@ -21,43 +21,57 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
+    // Netlify Identity widget is loaded from a script tag in index.html
     const netlifyIdentity = window.netlifyIdentity;
 
-    // --- Login Event ---
-    netlifyIdentity.on('login', (user: any) => {
+    if (!netlifyIdentity) {
+      console.warn("Netlify Identity widget script not loaded or found.");
+      setAuthReady(true); // Prevent app from hanging on a loading screen.
+      return;
+    }
+
+    const handleLogin = (user: any) => {
       setUser(user);
       netlifyIdentity.close(); // Close the modal on login
-    });
+    };
 
-    // --- Logout Event ---
-    netlifyIdentity.on('logout', () => {
+    const handleLogout = () => {
       setUser(null);
-    });
-    
-    // --- Init Event ---
-    // This fires when the script has loaded and has checked if a user is logged in.
-    netlifyIdentity.on('init', (user: any) => {
+    };
+
+    const handleInit = (user: any) => {
       setUser(user);
       setAuthReady(true);
-    });
+    };
+
+    // --- Attach Event Listeners ---
+    netlifyIdentity.on('login', handleLogin);
+    netlifyIdentity.on('logout', handleLogout);
+    netlifyIdentity.on('init', handleInit);
 
     // --- Init Netlify Identity ---
+    // This must be called after listeners are attached
     netlifyIdentity.init();
 
     // --- Cleanup ---
+    // Remove the specific listeners on component unmount
     return () => {
-      netlifyIdentity.off('login');
-      netlifyIdentity.off('logout');
-      netlifyIdentity.off('init');
+      netlifyIdentity.off('login', handleLogin);
+      netlifyIdentity.off('logout', handleLogout);
+      netlifyIdentity.off('init', handleInit);
     };
   }, []);
 
   const login = () => {
-    window.netlifyIdentity.open();
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.open();
+    }
   };
 
   const logout = () => {
-    window.netlifyIdentity.logout();
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.logout();
+    }
   };
 
   const contextValue = { user, login, logout, authReady };
