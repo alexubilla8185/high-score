@@ -47,6 +47,13 @@ const MunchieIcon = () => (
     </svg>
 );
 
+const MailIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+
 const comingSoonGames = [
     {
         icon: <StrainIcon />,
@@ -156,17 +163,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onPlayDemo, onTak
       <section className="w-full max-w-3xl py-20 border-t border-gray-200 dark:border-neutral-800/50 text-center">
         <h2 className="text-3xl font-bold mb-4">Join the Waitlist</h2>
         <p className="text-neutral-600 dark:text-neutral-300 mb-8 max-w-xl mx-auto">Be the first to know about new features, mini-games, and special events. We're just getting started.</p>
-        <form onSubmit={handleWaitlistSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-          <input
-            type="email"
-            name="email"
-            placeholder="your.email@cosmic.net"
-            required
-            className="flex-grow bg-gray-100 dark:bg-neutral-800 border-2 border-transparent focus:border-[#0079FF] focus:bg-white dark:focus:bg-black rounded-full p-4 text-black dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black transition-colors"
-          />
-          <button type="submit" className="bg-[#0079FF] hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]">
-            Keep Me Posted
-          </button>
+        <form onSubmit={handleWaitlistSubmit} className="max-w-xl mx-auto w-full">
+          <div className="relative p-1 rounded-full cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] shadow-lg">
+            <div className="flex items-center bg-white dark:bg-black rounded-full transition-colors duration-300">
+              <div className="pl-5 pr-2 text-neutral-400 dark:text-neutral-500 pointer-events-none">
+                <MailIcon />
+              </div>
+              <input
+                type="email"
+                name="email"
+                placeholder="your.email@cosmic.net"
+                required
+                className="flex-grow w-full py-4 bg-transparent text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-0 border-none"
+              />
+              <button 
+                type="submit" 
+                className="m-1 flex-shrink-0 cta-button bg-gradient-to-r from-[#0079FF] to-[#00DFA2] text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black dark:focus-visible:ring-offset-black focus-visible:ring-[#00DFA2]"
+              >
+                Get Notified
+              </button>
+            </div>
+          </div>
         </form>
       </section>
     </div>

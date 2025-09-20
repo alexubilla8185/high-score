@@ -1,6 +1,4 @@
 
-
-
 import React from 'react';
 
 const LogomarkIcon: React.FC<{ className?: string }> = ({ className }) => {
@@ -37,21 +35,25 @@ const TekguyzBadge: React.FC<TekguyzBadgeProps> = ({ theme = 'dark' }) => {
 
   return (
     <div
-      className={`fixed bottom-4 right-4 flex items-center px-3 py-1.5 rounded-lg shadow-lg transition-colors duration-300 text-xs font-semibold z-50 ${themeClasses[theme]}`}
+      className="fixed bottom-4 right-4 z-50 rounded-lg shadow-lg p-[1.5px] cta-button bg-gradient-to-r from-[#0079FF] via-[#00DFA2] to-[#F6FA70] transition-all duration-300 hover:scale-105"
     >
       <div
-        className="p-1 -ml-1 mr-1.5"
+        className={`flex items-center px-3 py-1.5 rounded-[6.5px] transition-colors duration-300 text-xs font-semibold ${themeClasses[theme]}`}
       >
-        <LogomarkIcon className="w-4 h-4" />
+        <div
+          className="p-1 -ml-1 mr-1.5"
+        >
+          <LogomarkIcon className="w-4 h-4" />
+        </div>
+        <a
+          href="https://tekguyz.com?ref=made-by-tekguyz"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`transition-colors duration-300 ${hoverClasses[theme]} focus:outline-none focus-visible:underline`}
+        >
+          <span>Made by <strong>TEKGUYZ</strong></span>
+        </a>
       </div>
-      <a
-        href="https://tekguyz.com?ref=made-by-tekguyz"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`transition-colors duration-300 ${hoverClasses[theme]} focus:outline-none focus-visible:underline`}
-      >
-        <span>Made by <strong>TEKGUYZ</strong></span>
-      </a>
     </div>
   );
 };
