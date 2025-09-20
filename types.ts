@@ -31,9 +31,9 @@ export enum Vibe {
 }
 
 export enum AIPersonality {
-  Witty = "WITTY",
-  Sassy = "SASSY",
-  Unfiltered = "UNFILTERED",
+  BobMarley = "BOB_MARLEY",
+  WillieNelson = "WILLIE_NELSON",
+  SnoopDogg = "SNOOP_DOGG",
 }
 
 // Action types for the reducer
@@ -57,6 +57,7 @@ export type Action =
   | { type: 'TICK_TIMER' }
   | { type: 'TOGGLE_SOUND' }
   | { type: 'TOGGLE_HAPTIC' }
+  // FIX: Add the SET_AI_PERSONALITY action type.
+  | { type: 'SET_AI_PERSONALITY'; payload: AIPersonality }
   | { type: 'UPGRADE_TO_PRO' }
-  | { type: 'LOGOUT' }
-  | { type: 'SET_AI_PERSONALITY'; payload: AIPersonality };
+  | { type: 'LOGOUT' };

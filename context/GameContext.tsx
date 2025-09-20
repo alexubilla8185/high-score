@@ -47,7 +47,7 @@ const initialState: GameStateShape = {
     isMuted: true,
     isHapticEnabled: true,
     isPro: true,
-    aiPersonality: AIPersonality.Witty,
+    aiPersonality: AIPersonality.BobMarley,
 };
 
 // Define private action types for setting initial state values.
@@ -92,7 +92,7 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
     case 'RESTART_GAME':
       return { ...state, ...getInitialState(), isPro: state.isPro, aiPersonality: state.aiPersonality }; // Keep pro status and personality on restart
     case 'LOGOUT':
-      return { ...state, ...getInitialState(), isPro: false, aiPersonality: AIPersonality.Witty };
+      return { ...state, ...getInitialState(), isPro: false, aiPersonality: AIPersonality.BobMarley };
     case 'CONTINUE_TO_NEXT_VIBE':
         return { ...state, ...getInitialState(), gameState: GameState.Loading, vibe: action.payload.vibe, aiPersonality: action.payload.aiPersonality, isDemoMode: false };
     case 'TICK_TIMER':
@@ -117,11 +117,12 @@ const gameReducer = (state: GameStateShape, action: Action | PrivateAction): Gam
         localStorage.setItem('hapticEnabled', JSON.stringify(newHapticState));
         return { ...state, isHapticEnabled: newHapticState };
     }
+    // FIX: Add a reducer case to handle setting the AI personality.
+    case 'SET_AI_PERSONALITY':
+        return { ...state, aiPersonality: action.payload };
     case 'UPGRADE_TO_PRO': {
         return { ...state, isPro: true };
     }
-    case 'SET_AI_PERSONALITY':
-        return { ...state, aiPersonality: action.payload };
     case 'SET_THEME':
       return { ...state, theme: action.payload };
     case 'SET_SOUND':

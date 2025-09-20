@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { QuestionType, Vibe } from '../types';
+import { QuestionType, Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 
 const CheckIcon = () => (
@@ -43,13 +43,29 @@ const ResultsScreen: React.FC = () => {
     return { title: "Grounded", level: "Your feet are firmly on Earth.", tip: "You're as sharp as a tack. If you're looking to take off, try a funny movie. If you're happy here, a glass of cold water and a walk outside are calling your name.", color: "text-blue-600 dark:text-[#0079FF]" };
   }, [score]);
   
-  let nextVibeInfo: { text: string; buttonText: string; nextVibe: Vibe } | null = null;
-  if (vibe === Vibe.Buzzed) nextVibeInfo = { text: "The journey continues...", buttonText: "Level Up: Try 'Toasted'", nextVibe: Vibe.Toasted };
-  else if (vibe === Vibe.Toasted) nextVibeInfo = { text: "You're getting warmer...", buttonText: "Go Deeper: Try 'Voyager'", nextVibe: Vibe.Voyager };
+  const nextQuizInfo = useMemo(() => {
+    if (vibe === Vibe.Buzzed) {
+      return {
+        buttonText: "Level Up with Willie Nelson",
+        nextVibe: Vibe.Toasted,
+        nextPersonality: AIPersonality.WillieNelson
+      };
+    }
+    if (vibe === Vibe.Toasted) {
+      return {
+        buttonText: "Go Deeper with Snoop Dogg",
+        nextVibe: Vibe.Voyager,
+        nextPersonality: AIPersonality.SnoopDogg
+      };
+    }
+    return null;
+  }, [vibe]);
   
   const handleRestart = () => dispatch({ type: 'RESTART_GAME' });
-  // Fix: The payload for 'CONTINUE_TO_NEXT_VIBE' must be an object containing both the new vibe and the current AI personality.
-  const handleContinue = (nextVibe: Vibe) => dispatch({ type: 'CONTINUE_TO_NEXT_VIBE', payload: { vibe: nextVibe, aiPersonality: state.aiPersonality } });
+  
+  const handleContinue = (nextVibe: Vibe, nextPersonality: AIPersonality) => {
+    dispatch({ type: 'CONTINUE_TO_NEXT_VIBE', payload: { vibe: nextVibe, aiPersonality: nextPersonality } });
+  };
   
   const handleShare = async () => {
     const shareData = {
@@ -132,7 +148,7 @@ const ResultsScreen: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {nextVibeInfo && !isDemoMode && <button onClick={() => handleContinue(nextVibeInfo.nextVibe)} className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-4 px-6 rounded-lg text-lg transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF0060]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">{nextVibeInfo.buttonText}</button>}
+        {nextQuizInfo && !isDemoMode && <button onClick={() => handleContinue(nextQuizInfo.nextVibe, nextQuizInfo.nextPersonality)} className="w-full bg-gradient-to-r from-[#FF0060] to-[#F6FA70] text-black dark:text-white font-bold py-4 px-6 rounded-lg text-lg transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF0060]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6FA70] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">{nextQuizInfo.buttonText}</button>}
         <div className="flex flex-col md:flex-row gap-4">
             <button onClick={handleRestart} className="w-full bg-[#0079FF] hover:bg-[#005cbf] text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">Play Again</button>
             <button onClick={handleShare} className="w-full bg-transparent border-2 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 text-gray-800 dark:text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-black">Share Score</button>
