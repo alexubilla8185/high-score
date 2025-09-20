@@ -20,16 +20,14 @@ const AppInitializer: React.FC = () => {
   useEffect(() => {
     const fetchAuthConfig = async () => {
       try {
-        const response = await fetch('/.netlify/functions/gemini-proxy', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ action: 'getAuthConfig' }),
-        });
+        const response = await fetch('/.netlify/functions/auth-config');
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Failed to load authentication configuration. Status: ${response.status}`);
+          const message = errorData.error || `Failed to load authentication configuration. Status: ${response.status}`;
+          if (response.status === 404) {
+              throw new Error("Could not connect to the authentication service (404 Not Found). This is likely a deployment issue with the serverless function.");
+          }
+          throw new Error(message);
         }
         const authConfig: AuthConfig = await response.json();
         if (!authConfig.domain || !authConfig.clientId || !authConfig.audience) {
