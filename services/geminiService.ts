@@ -14,8 +14,6 @@ const handleFetchErrors = async (response: Response) => {
 };
 
 export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promise<Question[]> => {
-  console.log(`Fetching quiz questions for vibe: ${vibe} with personality: ${aiPersonality}`);
-
   const response = await fetch(PROXY_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27,8 +25,6 @@ export const fetchQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonalit
 };
 
 export const fetchFunnyFeedback = async (question: string, userAnswer: string, aiPersonality: AIPersonality): Promise<string> => {
-    console.log(`Fetching funny feedback for question: "${question}" with answer: "${userAnswer}" and personality: ${aiPersonality}`);
-    
     const response = await fetch(PROXY_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import Logo from './Logo';
@@ -14,9 +15,9 @@ const SoundIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w
 const AIBanterIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
 
 const proFeatures = [
-    { icon: <AIBanterIcon />, title: "Unlock AI Personalities", description: "Engage with Sassy or Unfiltered quizmasters." },
-    { icon: <ThemeIcon />, title: "Personalize Your Vibe", description: "Switch between light and dark themes." },
-    { icon: <><SoundIcon /><HapticIcon /></>, title: "Engage Your Senses", description: "Experience sounds and haptic feedback." }
+    { icon: <AIBanterIcon />, title: "Witty AI Banter", description: "Our Quizmaster fires back with funny, custom-generated feedback." },
+    { icon: <ThemeIcon />, title: "Custom Themes", description: "Switch between clean light and slick dark modes." },
+    { icon: <><SoundIcon /><HapticIcon /></>, title: "Immersive Feedback", description: "Experience sound effects and haptic vibrations." }
 ];
 
 interface AuthModalProps {
@@ -179,7 +180,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignInSuccess, onTakeT
             </form>
              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-4">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                <button onClick={() => setView(isSignUp ? 'signin' : 'signup')} className="font-bold text-[#0079FF] hover:underline ml-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#0079FF] rounded-sm">
+                <button 
+                    type="button"
+                    onClick={() => setView(isSignUp ? 'signin' : 'signup')} 
+                    className="font-bold text-[#0079FF] hover:underline ml-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#0079FF] rounded-sm"
+                >
                     {isSignUp ? 'Sign In' : 'Create one'}
                 </button>
             </p>
