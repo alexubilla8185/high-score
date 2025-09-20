@@ -1,10 +1,9 @@
 
 
 import React from 'react';
-import { Vibe } from '../types';
+import { Vibe, AIPersonality } from '../types';
 import { useGame } from '../context/GameContext';
 import Logo from './Logo';
-import AIPersonalitySelector from './AIPersonalitySelector';
 
 const BobMarleyIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 sm:w-10 sm:h-10 text-teal-500 dark:text-[#00DFA2] group-hover:animate-pulse">
@@ -33,35 +32,38 @@ const SnoopDoggIcon = () => (
 const vibes = [
     { 
         vibe: Vibe.Buzzed,
+        personality: AIPersonality.BobMarley,
         icon: <BobMarleyIcon />, 
-        title: 'Buzzed', 
-        subtitle: 'For a Light Toke',
-        description: "Chill questions for when you're just starting to feel it. Easy laughs, no heavy thinking.",
+        title: 'Bob Marley', 
+        subtitle: 'The "Roots" Level',
+        description: "Chill, spiritual questions on reggae, Rasta culture, and classic philosophy. A mellow riddim for the soul.",
         hoverClasses: 'hover:scale-[1.02]',
     },
     { 
         vibe: Vibe.Toasted, 
+        personality: AIPersonality.WillieNelson,
         icon: <WillieNelsonIcon />, 
-        title: 'Toasted', 
-        subtitle: 'Perfectly Baked',
-        description: 'The sweet spot. A mix of trippy riddles and weird scenarios for the seasoned stoner.',
+        title: 'Willie Nelson', 
+        subtitle: 'The "Outlaw" Level',
+        description: "Laid-back, story-based questions on stoner cinema, music history, and the munchies. For the seasoned traveler.",
         hoverClasses: 'hover:scale-[1.02] hover:-rotate-1',
     },
     { 
-        vibe: Vibe.Voyager, 
+        vibe: Vibe.Voyager,
+        personality: AIPersonality.SnoopDogg,
         icon: <SnoopDoggIcon />, 
-        title: 'Voyager', 
-        subtitle: 'Interstellar Flight',
-        description: "Buckle up, space cadet. These questions will bend reality and maybe your brain a little.",
+        title: 'Snoop Dogg', 
+        subtitle: 'The "Chronic" Level',
+        description: "Fo shizzle. Modern, creative questions on pop culture, highdeas, and trippy visuals to bend your reality.",
         hoverClasses: 'hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-[#0079FF]/30',
     },
 ];
 
 const StartScreen: React.FC = () => {
-    const { state, dispatch } = useGame();
+    const { dispatch } = useGame();
     
-    const handleStartGame = (vibe: Vibe) => {
-        dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality: state.aiPersonality } });
+    const handleStartGame = (vibe: Vibe, personality: AIPersonality) => {
+        dispatch({ type: 'START_GAME', payload: { vibe, aiPersonality: personality } });
     };
     
     return (
@@ -69,15 +71,12 @@ const StartScreen: React.FC = () => {
             <Logo />
             <h1 className="sr-only">Higher Please</h1>
             <div className="w-full max-w-lg flex flex-col items-center">
-                <div className="mb-8 w-full">
-                    <AIPersonalitySelector />
-                </div>
-                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Now, Set Your Altitude</h2>
+                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Spirit Guide</h2>
                 <div className="w-full space-y-4">
                 {vibes.map((v, index) => (
                     <button
                         key={v.vibe}
-                        onClick={() => handleStartGame(v.vibe)}
+                        onClick={() => handleStartGame(v.vibe, v.personality)}
                         className={`w-full p-4 sm:p-5 bg-white/50 dark:bg-neutral-900/50 border-2 border-gray-200 dark:border-neutral-800 rounded-xl text-left flex items-center space-x-4 sm:space-x-5 hover:bg-gray-100/70 dark:hover:bg-neutral-800/70 hover:border-[#0079FF] transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0079FF] ${v.hoverClasses}`}
                         style={{ animationDelay: `${index * 100}ms` }}
                     >

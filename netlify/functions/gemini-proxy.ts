@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Handler } from "@netlify/functions";
 import { Question, QuestionType, Vibe, AIPersonality } from "../../types";
@@ -52,15 +53,15 @@ const getQuizQuestions = async (vibe: Vibe, aiPersonality: AIPersonality): Promi
 
   switch (vibe) {
     case Vibe.Buzzed:
-      vibeInstruction = "The user has chosen the 'Feeling Buzzed' level. The questions should be lighthearted, silly, and focus on simple, funny observations. They should be relatively easy but surprising. Think about goofy shower thoughts.";
+      vibeInstruction = "The user has chosen the 'Buzzed' (Bob Marley 'Roots') level. The vibe is chill, spiritual, and classic. Content should cover Reggae & Music History (e.g., 'Which album features the song...'), Rastafarian Culture (e.g., 'cannabis is known as the wisdom ____'), Classic Strains, and Philosophy (e.g., 'Finish the Bob Marley quote...'). The questions should be lighthearted, silly, and relatively easy but surprising.";
       questionMixInstruction = "The question mix should favor simplicity: 7 MULTIPLE_CHOICE questions and 3 SHORT_ANSWER questions. Do not generate any IMAGE_QUESTION types for this vibe.";
       break;
     case Vibe.Toasted:
-      vibeInstruction = "The user has chosen the 'Perfectly Toasted' level. This is the classic experience. Generate a balanced mix of creative riddles, bizarre multiple-choice questions, and surreal image-based questions. The tone should be playful, surreal, and humorous.";
+      vibeInstruction = "The user has chosen the 'Toasted' (Willie Nelson 'Outlaw') level. The vibe is laid-back, story-based, and a bit mischievous, like classic Americana. Content should cover Stoner Cinema (e.g., 'In the movie Half Baked...'), Cannabis History & Law (e.g., 'Which US president did Willie Nelson smoke with...'), The Munchies (including prompts for extreme close-up images of food), and Music & Culture (e.g., 'What's the name of Willie Nelson's guitar?'). The tone should be playful and surreal.";
       questionMixInstruction = "The question mix should be balanced: 5 MULTIPLE_CHOICE, 3 SHORT_ANSWER, and 2 IMAGE_QUESTION types.";
       break;
     case Vibe.Voyager:
-      vibeInstruction = "The user has chosen the 'Cosmic Voyager' level. The questions should be deeply philosophical, surreal, and abstract, including reality-bending image prompts. Make them very challenging and weird, designed to make users question reality.";
+      vibeInstruction = "The user has chosen the 'Voyager' (Snoop Dogg 'Chronic') level. The vibe is modern, creative, pop-culture savvy, and humorous. Content should cover Modern Cannabis Culture (e.g., 'What does the number 710 refer to...'), Highdeas & Stoner Thoughts (e.g., 'Is a hotdog a sandwich? Defend your answer...'), Trippy Visuals for image generation (e.g., 'a sloth DJing on Mars'), and Hip-Hop & Culture (e.g., 'Snoop Dogg's friendship with...'). The questions should be abstract, challenging, and weird.";
       questionMixInstruction = "The question mix should be abstract and challenging: 3 MULTIPLE_CHOICE, 4 SHORT_ANSWER, and 3 IMAGE_QUESTION types.";
       break;
   }
