@@ -18,7 +18,7 @@ const AIPersonalitySelector: React.FC = () => {
 
     return (
         <div className="w-full max-w-md text-center">
-            <h2 className="text-lg font-bold mb-3 text-blue-600 dark:text-[#0079FF]">AI Quizmaster Attitude</h2>
+            <h2 className="text-lg font-bold mb-3 text-blue-600 dark:text-[#0079FF]">Pick Your Co-Pilot</h2>
             <div className="relative flex w-full p-1 bg-gray-200/80 dark:bg-neutral-900/80 rounded-full">
                 {personalityOptions.map(option => (
                     <button

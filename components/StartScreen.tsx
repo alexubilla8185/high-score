@@ -35,24 +35,24 @@ const vibes = [
         vibe: Vibe.Buzzed,
         icon: <BobMarleyIcon />, 
         title: 'Buzzed', 
-        subtitle: 'A Gentle Lift-off',
-        description: 'Lighthearted, silly, and simple questions. Perfect for a mellow mood and some easy giggles.',
+        subtitle: 'For a Light Toke',
+        description: "Chill questions for when you're just starting to feel it. Easy laughs, no heavy thinking.",
         hoverClasses: 'hover:scale-[1.02]',
     },
     { 
         vibe: Vibe.Toasted, 
         icon: <WillieNelsonIcon />, 
         title: 'Toasted', 
-        subtitle: 'The Classic Experience',
-        description: 'A surreal mix of creative riddles and bizarre scenarios. The perfect balance of weird and wonderful.',
+        subtitle: 'Perfectly Baked',
+        description: 'The sweet spot. A mix of trippy riddles and weird scenarios for the seasoned stoner.',
         hoverClasses: 'hover:scale-[1.02] hover:-rotate-1',
     },
     { 
         vibe: Vibe.Voyager, 
         icon: <SnoopDoggIcon />, 
         title: 'Voyager', 
-        subtitle: 'A Cosmic Journey',
-        description: 'Deeply philosophical and reality-bending questions. For when you want to question everything.',
+        subtitle: 'Interstellar Flight',
+        description: "Buckle up, space cadet. These questions will bend reality and maybe your brain a little.",
         hoverClasses: 'hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-[#0079FF]/30',
     },
 ];
@@ -72,7 +72,7 @@ const StartScreen: React.FC = () => {
                 <div className="mb-8 w-full">
                     <AIPersonalitySelector />
                 </div>
-                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Choose Your Vibe</h2>
+                <h2 className="text-3xl font-bold mb-6 text-teal-600 dark:text-[#00DFA2]">Now, Set Your Altitude</h2>
                 <div className="w-full space-y-4">
                 {vibes.map((v, index) => (
                     <button
